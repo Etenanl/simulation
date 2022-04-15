@@ -7,7 +7,7 @@ class _Time:
         self.flows=flows
         self.Random()
         pass
-    # 按照某种方式打乱flows列表
+    # 按照某种方式打乱flows列表，可能需要不止一次调用，每次发送前都进行打乱
     def Random(self):
         pass
 

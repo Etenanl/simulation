@@ -20,12 +20,6 @@ class _MainProcess:
         # 初始化路径
         self.paths = Sketch.Paths._Paths(self.d, self.w, self.path_path,self.flows)
 
-
-
-
-
-
-
     # 计算目前该发包的流在path上的哪个switch计数，找到该switch，生成要发送的包，调用该switch的Process_Packet传入包，再调用Update_FlowInfo计数
 
     # 循环运行的主程序

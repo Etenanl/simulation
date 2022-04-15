@@ -9,6 +9,7 @@ class _Packet:
         self.flow = Common.Flow._Flow()
         self.packet_data = Common.Packet._PacketData()
 
+    # 用注入的flow信息，对当前对象赋值
     def New_Packet(self,flow,packetData):
         self.flow=flow
         self.packet_data=packetData
@@ -17,4 +18,6 @@ class _Packet:
 
 class _PacketData:
     def __init__(self):
+        pass
+    def Set_Data(self):
         pass

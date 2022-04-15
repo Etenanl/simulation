@@ -34,3 +34,7 @@ class _Flows:
     # 将flow_data_set转换成发送时间，根据time_granularity与pps，放在flow_data_set
     def Generate_Send_List(self):
         pass
+
+    # 根据pps计算时间并按照颗粒度分类,生成一个list，作为填充
+    def Time_Calculate(self):
+        pass

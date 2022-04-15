@@ -2,8 +2,6 @@ import Common.Time
 #
 class _TimeList:
 
-
-
     # sortDataSet为注入的flow集合，数据结构为list，每一项为[发送时间，发送flow对象集合]
     def __init__(self,sortDataSet):
         self.sort_data_set=sortDataSet

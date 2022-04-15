@@ -9,3 +9,6 @@ class _FlowID:
         self.src_port=srcport
         self.dst_port=dstport
         self.protocol=protocol
+
+    def Set_FlowID(self):
+        pass

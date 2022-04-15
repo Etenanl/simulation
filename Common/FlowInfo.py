@@ -9,3 +9,5 @@ class _FlowInfo:
 
     def Set_pathID(self,pathID):
         self.pathID=pathID
+    def Set_FlowInfo(self):
+        pass
