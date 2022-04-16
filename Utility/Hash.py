@@ -11,18 +11,36 @@ import Utility.SHA256
 
 """
 
+class _Singleton:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
 
-class _Hash:
+class _Hash(_Singleton):
     # 可以写个单例模式实现，
-    def __init__(self):
+    def __init__(self): 
         self.md5 = Utility.MD5._MD5()
-        self.sha256=Utility.SHA256._SHA256()
+        self.sha256 = Utility.SHA256._SHA256()
 
     # 调用返回这个类的对象
     def Call(self):
-        pass
+        return _Hash()
+        #return self
 
-    # hash方法,value是输入的值，size是hash表大小，type输入hash方法，如”MD5“，”SHA256“
-    def Hash_Function(self,value,size,type=""):
-        pass
+    # hash方法, value是输入的值，size是hash表大小，type输入hash方法，如”MD5“，”SHA256“
+    # value: (srcIP, dstIP, srcport, dstport, protocol) --> str
+    def Hash_Function(self, value, size, type=""):
+        value_str = ""
+        for ele in value:
+            value_str += str(ele)
+        if type == "MD5":
+            result_10 = int(self.md5.MD5_Hash(value_str), 16)           
+        elif type == "SHA256":
+            result_10 = int(self.sha256.SHA256_Hash(value_str), 16)
+
+        result = result_10 % size
+        return result
+

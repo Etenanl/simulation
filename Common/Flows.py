@@ -9,6 +9,7 @@ class _Flows:
     def __init__(self, path, flowCount,time_granularity):
         # 存放数据集的路径
         self.path = path
+
         # 存放需要获取的flow数量
         self.flow_count = flowCount
         # 存放读入的数据，二元组list，[flowID,pps],可以用一个count计数确定flowID
