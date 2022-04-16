@@ -11,3 +11,5 @@ class _FlowInfo:
         self.pathID=pathID
     def Set_FlowInfo(self):
         pass
+    def Set_Real_Send_Num(self,realSendNum):
+        self.real_send_num=realSendNum

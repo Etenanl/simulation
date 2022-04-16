@@ -6,11 +6,11 @@ class _Packet:
     # Path =
     def __init__(self):
         #
-        self.flow = Common.Flow._Flow()
+        self.flow = Common.Flow._Flow(0,0)
         self.packet_data = Common.Packet._PacketData()
 
     # 用注入的flow信息，对当前对象赋值
-    def New_Packet(self,flow,packetData):
+    def New_Packet(self,flow,packetData=None):
         self.flow=flow
         self.packet_data=packetData
 

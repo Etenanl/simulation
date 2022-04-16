@@ -7,12 +7,15 @@ class _TimeList:
         self.sort_data_set=sortDataSet
         # 存放time的list
         self.time_list=[]
-
+        # 加一步判断，不生成flow为空的time
         for each in sortDataSet:
-            self.Generate_time_list(each[0],each[1])
+            if len(each[1]):
+                self.Generate_time_list(each[0],each[1])
+
     # 生成timelist
     def Generate_time_list(self,time,flows):
         time_array = Common.Time._Time(time,flows)
         self.time_list.append(time_array)
+
 
 
