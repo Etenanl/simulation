@@ -1,3 +1,5 @@
+import csv
+
 import Common.Flows
 import Common.Packet
 import Sketch.Paths
@@ -85,13 +87,40 @@ class _MainProcess:
         # 根据flows.timelist找到当前需要
         return self.packet.New_Packet(flow)
 
+    #查询sketch情况
     # 按path查询，内容拼接写到本地
-    def Query_Switch_Sketch(self):
-        pass
+    #
+    # 暂时用不到，大概
+    # def Query_Switch_Sketch(self):
+    #    pass
 
+    # 查询真实情况
     # 按path查询,path上有该路上flow信息，统计每个flow的发包情况作为真实值
     def Query_Path_Sketch(self):
-        pass
+        # 取到_Path对象
+        for path in self.paths.path_list:
+            pathid = path.path_ID
+            # 暂存该path下的所有内容每两个元素为[pahtid,flowid,模拟值][pahtid,flowid,真实值]
+            result_list =[]
+            for flow in path.flow:
+                flowID = flow.flowInfo.flowID
+                # 获取sketch上的值
+                # 1.计算scope
+                # 2.找到对应switch上sketch的值，赋给value,取最小值，
+                value = 0
+                flowID_sketchValue = [pathid,flowID,value]
+                result_list.append(flowID_sketchValue)
+                # 获取真实发包数
+                value = flow.flowInfo.real_send_num
+                flowID_realValue = [pathid,flowID,value]
+                result_list.append(flowID_realValue)
+            # 写入文件
+            filename="Source\\Result\\path"+str(pathid)+".csv"
+            with open(filename,"a",newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(result_list)
+                file.close()
+
 
     # 每次发包时修改流信息
     def Update_FlowInfo(self, packet):

@@ -106,6 +106,14 @@ if __name__ == '__main__':
     # print(packet.flow.flowInfo.real_send_num)
 
 
+    #写csv测试代码
+    filename = "Source\\Result\\path1.csv"
+    value = [[1,2,3],[3,2,1]]
+    with open(filename,"a",newline='')as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(value)
+        csvfile.close()
+
 
 
 

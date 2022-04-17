@@ -26,19 +26,15 @@ class _Paths:
         self.switch_count = 0
         # 存放路径
         self.path_config = []
-
-
     # 读取Source中path.json，并根据switch和path编号生成path_list
     def Read_Config(self):
         pass
-
     # 逐路生成，如果该switch已存在（查switch_ID），就附上引用，否则新建，并更新switch_ID和switch_count
     def Generate_path(self):
         pass
     # 查询，给出pathID，返回这条路径上所有sketch的sketch_table
     def Query(self,Path_ID):
         pass
-
     # 查询pathID,返回所有的Path_ID
     def Get_PathID(self):
         pass
@@ -48,8 +44,6 @@ class _Paths:
     # 将scope和packet传递给对应pathID的path，调用_Path.Deliver_Packet(self,scope,packet):
     def Deliver_Packet(self,pathID,scope,packet):
         pass
-
-
 class _Path:
     def __init__(self):
         # 存放switch对象
