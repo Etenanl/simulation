@@ -13,7 +13,7 @@ from Process.F1_Score import get_F1Score
 from Process.RE import get_entropy_RE
 '''
 计算前使用initialize初始化数据结构
-之后可以直接调用get_xxx函数写入对应的文件中
+之后可以直接调用write_xxx函数写入对应的文件中
 '''
 class _Process:
     def __init__(self):
