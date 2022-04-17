@@ -3,3 +3,5 @@ import Sketch.BasicSketch
 class _HashSketch(Sketch.BasicSketch._Basic_Sketch):
     def __init__(self):
         pass
+    def Receive_packet(packet):
+        pass
