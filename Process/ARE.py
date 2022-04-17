@@ -1,14 +1,15 @@
-"""
-完成数据处理的功能，数据放在inputPath，输出在outPath
-输入数据为一个csv文件夹，命名规则为“Path1.csv”,“Path2.csv”每一个文件对应一个path上的数据
-csv文件中，每一个flow对应两行，第一行为sketch模拟的值，第二行为记录的真实值
-从左往右第一列为path_ID,第二列为flow_ID,第三列为计数值
-结果输出在文件里
+import os
 
-"""
-class _ARE:
-    def __init__(self):
-        pass
 
-    def Process(self,inputPath,outPath):
-        pass
+def get_ARE(map_flow_id_to_size: map):
+    ARE_value = 0.0
+    for key, value in map_flow_id_to_size.items():
+        simulated_value, real_value = value
+        ARE_value = ARE_value + abs(float(simulated_value - real_value)) / float(real_value)
+    ARE_value = ARE_value / float(len(map_flow_id_to_size.keys()))
+    return ARE_value
+
+
+
+
+
