@@ -96,10 +96,15 @@ class _MainProcess:
 
     # 查询真实情况
     # 按path查询,path上有该路上flow信息，统计每个flow的发包情况作为真实值
+    #所有交换机上的sketch
+    skethes={}
+
+
     def Query_Path_Sketch(self):
         # 取到_Path对象
         for path in self.paths.path_list:
             pathid = path.path_ID
+            sketches = path.path_query()
             # 暂存该path下的所有内容每两个元素为[pahtid,flowid,模拟值][pahtid,flowid,真实值]
             result_list =[]
             for flow in path.flow:
@@ -111,9 +116,17 @@ class _MainProcess:
                 flowID_sketchValue = [pathid,flowID,value]
                 result_list.append(flowID_sketchValue)
                 # 获取真实发包数
-                value = flow.flowInfo.real_send_num
-                flowID_realValue = [pathid,flowID,value]
-                result_list.append(flowID_realValue)
+                # value = flow.flowInfo.real_send_num
+                # flowID_realValue = [pathid,flowID,value]
+                # result_list.append(flowID_realValue)
+
+                hash1 = sketches[0][self.hash.Hash_Function(str(flow.flowInfo.flowID), path.wp, "MD5")]
+                hash2 = sketches[0][self.hash.Hash_Function(str(flow.flowInfo.flowID), path.wp, "SHA256")]
+                # 找对应的值
+                # 取第一行和第二行的min
+                calcu = min(hash1, hash2)
+
+
             # 写入文件
             filename="Source\\Result\\path"+str(pathid)+".csv"
             with open(filename,"a",newline='') as file:

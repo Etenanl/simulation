@@ -4,15 +4,18 @@ import Common.Packet
 class _Switch:
     def __init__(self,switchid,d,ws):
         # 用来存放sketch
+        self.wk = None
+        self.active_sketch=self.Initiate_Active_Sketch(d,ws)
+        self.inactive_sketch = self.Initiate_Idle_Sketch(d,ws)
         self.d = d
         self.ws = ws
-        self.Initiate_Active_Sketch(self,d,ws,True)
-        self.Initiate_Idle_Sketch(self,d,ws,False)
+        self.Initiate_Active_Sketch(d,ws)
+        self.Initiate_Idle_Sketch(d,ws)
         # 后续用来存放deviation的packet
         self.hash_table = []
         # 放一个map[path_ID：[α，β]],表示本交换机在某个路径上的范围      对应的sketch(只有一个sketch
         self.scope = {}
-        #不同path的wj
+        #不同path的wp
         self.wps = {}
         self.switch_ID = switchid
         self.path_number = 0    #经过本交换机的path总数
@@ -21,9 +24,10 @@ class _Switch:
     # 返回对应sketch上的sketch_table内容，列表返回，比如d=2，w=3返回[[1,2,3],[1,2,3]]
 
     def Query(self):
-        ans =  self.active_sketch.sketch_table.clone()
-        self.active_sketch = self.inactive_sketch
-        self.inactive_sketch = Sketch.BasicSketch._Basic_Sketch(self.d,self.wk,False)
+        # print(self.active_sketch.sketch_table)
+        ans =  self.active_sketch.sketch_table.copy()
+        # self.active_sketch = self.inactive_sketch
+        # self.inactive_sketch = Sketch.BasicSketch._Basic_Sketch(self.d,self.ws,False)
         return ans
 
     # 处理正常收到的包,packet为Common.Packet._Packet
@@ -31,7 +35,7 @@ class _Switch:
     # 判断是否正确，如果正确，交给basicsketch，否则交给hashsketch
     def Process_Packet(self,path_ID,packet):
         if(self.Receive(packet)):
-            self.active_sketch.Receive_packet(packet,self.scope[path_ID])
+            self.active_sketch.Receive_packet(packet,self.scope[path_ID],self.wps[path_ID])
         else:
             pass
     # 接收包，判断是否路径正确
@@ -43,6 +47,7 @@ class _Switch:
 
     # 生成一个新的Sketch,d,w为参数
     def Initiate_Active_Sketch(self,d,ws):
-        self.active_sketch = Sketch.BasicSketch._Basic_Sketch(d,ws,True)
+
+        return Sketch.BasicSketch._Basic_Sketch(d,ws,True)
     def Initiate_Idle_Sketch(self,d,ws):
-        self.inactive_sketch = Sketch.BasicSketch._Basic_Sketch(d,ws,False)
+        return Sketch.BasicSketch._Basic_Sketch(d,ws,False)

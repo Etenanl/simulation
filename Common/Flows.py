@@ -22,7 +22,8 @@ class _Flows:
         self.flow_data_set = []
         # 时间粒度
         self.time_granularity = time_granularity
-
+        # 存放全部flow
+        self.flows = []
         # 初始化生成对应的timelist，[time,[flow,flow]]
         self.Read_dateset(self.path, self.flow_count)
 
@@ -80,8 +81,10 @@ class _Flows:
     def Generate_Flow_List(self):
         for each in self.temp_flowID:
             temp_flow_list = [each[0], []]
-            for flow in each[1]:
-                temp_flow_list[1].append(Common.Flow._Flow(pps=each[0], flowID=flow))
+            for flowID in each[1]:
+                flow = Common.Flow._Flow(pps=each[0], flowID=flowID)
+                self.flows.append(flow)
+                temp_flow_list[1].append(flow)
             self.temp_flows.append(temp_flow_list)
 
     # 根据pps计算时间并按照颗粒度分类,生成一个list，作为填充
