@@ -34,7 +34,8 @@ class _Paths:
         # 存放路径
         self.path_config = []
         self.switches = []
-        self.wp = wp
+        # 文档中w，值应为2^16
+        self.logical_w = wp
         self.initial_switches()
         self.Read_Config()
         self.Initial_Scope()
@@ -43,11 +44,7 @@ class _Paths:
 
     def initial_switches(self):
         for i in range(0,self.switch_count+1):
-            # 修改范围
-            #
-            #
-            #
-            pow = random.randint(8,8)
+            pow = random.randint(8,12)
             self.switches.append(Sketch.Switch._Switch(i,self.d,int(2**pow)))
 
     # 读取Source中path.json，并根据switch和path编号生成path_list
@@ -58,13 +55,12 @@ class _Paths:
                 path_id = int(item[0])
                 switchids = item[1]
                 reverse_path_id = path_id+104
-                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.wp)
-                #
+                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.logical_w)
                 #
                 # 删去了clone
                 reverse_path = switchids.copy()
                 reverse_path.reverse()
-                self.path_list[reverse_path_id] =_Path(reverse_path_id,reverse_path,self.switches,self.wp)
+                self.path_list[reverse_path_id] =_Path(reverse_path_id,reverse_path,self.switches,self.logical_w)
 
     def Initial_Scope(self):
         for path in self.path_list.values():
@@ -96,13 +92,13 @@ class _Paths:
 
 
 class _Path:
-    def __init__(self,path_ID,switchids,switches,w):
+    def __init__(self,path_ID,switchids,switches,wp):
         # 哈希工具类
         self.hash = Utility.Hash._Hash()
         # 存放w
-        self.w = w
         # 这个路径上sketch总w数量
-        self.wp = 0
+        # 文档中w，值应为2^16
+        self.logical_w = wp
         # 存放switch对象
         self.path = []
         self.path_ID = path_ID
@@ -126,18 +122,18 @@ class _Path:
     # 初始化时计算这个路径上的Scpoe，并赋给对应交换机，scope和path_id
     def Scope_Count(self):
         total = 0.0
-        wp = 0
+        # wp = 0
         for sw in self.path:
             total += 1.0*sw.ws/sw.path_number
-            wp += sw.ws
-        self.wp = wp
+        #     wp += sw.ws
+        # self.wp = wp
         current = 0.0
         next = 0.0
         for sw in self.path:
             next = current + 1.0*sw.ws/sw.path_number
             sw.scope[self.path_ID] = [current*1.0/total,next*1.0/total]
             self.scope.append([current*1.0/total,next*1.0/total])
-            sw.wps[self.path_ID] = self.wp
+            sw.wps[self.path_ID] = self.logical_w
             current = next
 
     def path_query(self):
@@ -164,16 +160,16 @@ class _Path:
         for flow in self.flow:
             hash_value1 = 0
             hash_value2 = 0
-            hash1 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.wp,"MD5")
-            hash2 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.wp,"SHA256")
+            hash1 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,"MD5")
+            hash2 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,"SHA256")
             for i in range(0, len(self.path)):
                 scope_i = self.scope[i]
                 switch_i = self.path[i]
-                if hash1 >= round(scope_i[0] * self.wp)+1  and hash1 <= round(scope_i[1] * self.wp):
-                    index1 = (switch_i.ws-1) * (hash1 - round(scope_i[0] * self.wp) - 1) / (round(scope_i[1] * self.wp) - round(scope_i[0] * self.wp) - 1)
+                if hash1 >= round(scope_i[0] * self.logical_w)  and hash1 <= round(scope_i[1] * self.logical_w)-1:
+                    index1 = (switch_i.ws-1) * (hash1 - round(scope_i[0] * self.logical_w) - 1) / (round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
                     hash_value1 = sketches[i][0][int(index1)]
-                if hash2 >= round(scope_i[0] * self.wp)+1  and hash2 <= round(scope_i[1] * self.wp):
-                    index2 = (switch_i.ws-1) * (hash2 - round(scope_i[0] * self.wp) - 1) / (round(scope_i[1] * self.wp) - round(scope_i[0] * self.wp) - 1)
+                if hash2 >= round(scope_i[0] * self.logical_w)  and hash2 <= round(scope_i[1] * self.logical_w)-1:
+                    index2 = (switch_i.ws-1) * (hash2 - round(scope_i[0] * self.logical_w) - 1) / (round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
                     hash_value2 = sketches[i][1][int(index2)]
             flow.flowInfo.packetnum_skech = min(hash_value1,hash_value2)
 

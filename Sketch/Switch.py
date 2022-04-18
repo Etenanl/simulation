@@ -4,18 +4,18 @@ import Common.Packet
 class _Switch:
     def __init__(self,switchid,d,ws):
         # 用来存放sketch
-        self.wk = None
         self.active_sketch=self.Initiate_Active_Sketch(d,ws)
         self.inactive_sketch = self.Initiate_Idle_Sketch(d,ws)
         self.d = d
+        # switch上的真实w数量
         self.ws = ws
-        self.Initiate_Active_Sketch(d,ws)
-        self.Initiate_Idle_Sketch(d,ws)
+        self.Initiate_Active_Sketch(d,self.ws)
+        self.Initiate_Idle_Sketch(d,self.ws)
         # 后续用来存放deviation的packet
         self.hash_table = []
         # 放一个map[path_ID：[α，β]],表示本交换机在某个路径上的范围      对应的sketch(只有一个sketch
         self.scope = {}
-        #不同path的wp
+        #不同path的wp，目前统一为2^16
         self.wps = {}
         self.switch_ID = switchid
         self.path_number = 0    #经过本交换机的path总数

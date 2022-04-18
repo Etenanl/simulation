@@ -13,18 +13,18 @@ import Sketch.Paths
 
 class Process:
 
-    def __init__(self):
+    def __init__(self,DataSetPath = "Source\\test.csv",TopoPath = "Source\\path.json",FlowCount = 1000,LogicalW = 65536,GlobalD = 2):
         # 存放d和w
-        self.d = 0
-        self.w = 0
+        self.d = GlobalD
+        self.w = LogicalW
         # 一秒的时间粒度
         self.time_granularity = 1000000
         # 数据集路径
-        self.data_set_path = "Source\\test.csv"
+        self.data_set_path = DataSetPath
         # 使用数据数量
-        self.flow_count = 50000
+        self.flow_count = FlowCount
         # 初始化flows
-        self.flows = Common.Flows._Flows("Source\\mawi.csv", 1000, 1000000)
+        self.flows = Common.Flows._Flows(self.data_set_path, self.flow_count, 1000000)
         # 初始化一个packet
         self.packet = Common.Packet._Packet()
         # hash工具类
@@ -33,9 +33,9 @@ class Process:
         self.hash = Utility.Hash._Hash()
         # 拓扑的路径
 
-        self.path_path = ""
+        self.path_path = TopoPath
         # 初始化路径
-        self.paths = Sketch.Paths._Paths('../Source/path.json', self.flows.flows, 2, 1)
+        self.paths = Sketch.Paths._Paths(self.path_path, self.flows.flows, self.d, 1)
 
         # 计算目前该发包的流在path上的哪个switch计数，找到该switch，生成要发送的包，调用该switch的Process_Packet传入包，再调用Update_FlowInfo计数
         #self.Main_Process()
@@ -260,9 +260,16 @@ if __name__ == '__main__':
     # for each in w:
     #     print(hash.Hash_Function(str(each),ws,"MD5"))
     #     print(hash.Hash_Function(str(each),ws,"SHA256"))
-
-    sketch = Process()
-    sketch.Main_Process(2)
+    # 程序入口
+    sketch = Function.MainProcess._MainProcess()
+    # 构造方法
+    # MainProcess(self,DataSetPath = "Source\\test.csv",TopoPath = "Source\\path.json",FlowCount = 1000,LogicalW = 65536, GlobalD = 2,RuningTime = 2):
+    # 参数含义依次为flow数据集地址，path拓扑地址，使用的流数，文档中w（2^16），文档中d(2),运行秒数（每1秒每个流发pps个包）
+    # 只测试少数几个路径上流的发包，可以调整path对flow的分配逻辑，在Path.Load_flow()
+    # Sketch包中内容整理了一点，修改了一下只在类内使用的wp，ws等，之前有点乱，在定义的地方有注释
+    # 模拟发包
+    sketch.Main_Process()
+    # 查询
     sketch.Query_Path_Sketch()
 
 
