@@ -23,6 +23,9 @@ class _Switch:
 
     # 返回对应sketch上的sketch_table内容，列表返回，比如d=2，w=3返回[[1,2,3],[1,2,3]]
 
+    def refresh_sketch(self):
+        self.active_sketch=self.Initiate_Active_Sketch(self.d,self.ws)
+       
     def Query(self):
         # print(self.active_sketch.sketch_table)
         ans =  self.active_sketch.sketch_table.copy()
@@ -45,9 +48,17 @@ class _Switch:
         else:
             return False
 
+    def Process_Packet_common(self,path_ID,packet):
+        self.active_sketch.Receive_packet_common(packet)
+    
+    def Process_Packet_CU(self,path_ID,packet):
+        if(self.Receive(packet)):
+            self.active_sketch.Receive_packet_CU(packet,self.scope[path_ID],self.wps[path_ID])
+        else:
+            pass
+
     # 生成一个新的Sketch,d,w为参数
     def Initiate_Active_Sketch(self,d,ws):
-
         return Sketch.BasicSketch._Basic_Sketch(d,ws,True)
     def Initiate_Idle_Sketch(self,d,ws):
         return Sketch.BasicSketch._Basic_Sketch(d,ws,False)

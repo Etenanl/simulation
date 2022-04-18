@@ -30,7 +30,16 @@ class _Basic_Sketch:
             if hash >= round(scope[0]*wp) and hash <= round(scope[1]*wp)-1:
                 index = (self.sketch_w-1)*(hash-round(scope[0]*wp)-1)/(round(scope[1]*wp) - round(scope[0]*wp) -1)
                 self.sketch_table[i][int(index)] += 1
-
+    
+    def Receive_packet_common(self,packet):
+        hashfunc = ["MD5","SHA256"]
+        for i in range(0,self.d):
+            hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),self.sketch_w,hashfunc[i])
+            self.sketch_table[i][hash] += 1
+    
+    #
+    def Receive_packet_CU(self,packet,scope,wp):
+        pass
 
 
         

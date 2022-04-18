@@ -41,7 +41,6 @@ class _Paths:
         self.Initial_Scope()
         self.Load_flow()
 
-
     def initial_switches(self):
         for i in range(0,self.switch_count+1):
             pow = random.randint(8,12)
@@ -116,6 +115,16 @@ class _Path:
     def Deliver_Packet(self,packet):
         for switch in self.path:
             switch.Process_Packet(self.path_ID,packet)
+
+    #common sketch:
+    def Deliver_Packet_common(self,packet):
+        for switch in self.path:
+            switch.Process_Packet_common(self.path_ID,packet)
+
+    #CU sketch:
+    def Deliver_Packet_CU(self,packet):
+        for switch in self.path:
+            switch.Process_Packet_CU(self.path_ID,packet)
     def Initiate_Flow_Path(self):
         pass
 
@@ -172,11 +181,13 @@ class _Path:
                     index2 = (switch_i.ws-1) * (hash2 - round(scope_i[0] * self.logical_w) - 1) / (round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
                     hash_value2 = sketches[i][1][int(index2)]
             flow.flowInfo.packetnum_skech = min(hash_value1,hash_value2)
-
-
-
             #找对应的值
             #取第一行和第二行的min
             calcu = min(hash_value1,hash_value2)
             flow.flowInfo.packetnum_skech = calcu
             #print(calcu)
+
+    def caculate_common(self):
+        pass
+    def caculate_CU(self):
+        pass
