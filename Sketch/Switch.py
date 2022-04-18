@@ -3,6 +3,8 @@ import Sketch.BasicSketch
 import Common.Packet
 class _Switch:
     def __init__(self,switchid,d,ws):
+        # 存放hashfunction
+        self.hashfunc = ["MD5","SHA256"]
         # 用来存放sketch
         self.active_sketch=self.Initiate_Active_Sketch(d,ws)
         self.inactive_sketch = self.Initiate_Idle_Sketch(d,ws)
@@ -48,7 +50,7 @@ class _Switch:
         else:
             return False
 
-    def Process_Packet_common(self,path_ID,packet):
+    def Process_Packet_common(self,packet):
         self.active_sketch.Receive_packet_common(packet)
     
     def Process_Packet_CU(self,path_ID,packet):
@@ -59,6 +61,6 @@ class _Switch:
 
     # 生成一个新的Sketch,d,w为参数
     def Initiate_Active_Sketch(self,d,ws):
-        return Sketch.BasicSketch._Basic_Sketch(d,ws,True)
+        return Sketch.BasicSketch._Basic_Sketch(d,ws,True,self.hashfunc)
     def Initiate_Idle_Sketch(self,d,ws):
-        return Sketch.BasicSketch._Basic_Sketch(d,ws,False)
+        return Sketch.BasicSketch._Basic_Sketch(d,ws,False,self.hashfunc)

@@ -68,6 +68,37 @@ class _MainProcess:
             # 时间过去一个单位
             time_counter+=1
 
+
+    def Main_Process_Common(self):
+        # 用来计算模拟时间，表示秒
+        time_counter = 0
+        while time_counter <= self.running_time:
+            # 用来模拟一个单位时间内的时间流动
+            timer = 0
+            for time in self.flows.time_list.time_list:
+                if timer > self.time_granularity:
+                    break
+                while time.time>timer:
+                    timer += 1
+                # 处理转发
+                for each in time.flows:
+                    # 对于每个flow，做以下操作，
+                    # 1.找到对应pathID，以及flowID，
+                    # flowID = each.flowInfo.flowID
+                    pathID = each.flowInfo.pathID
+
+                    # 2.将flow封装成Packet
+                    self.packet.New_Packet(each)
+                    # 3.将Packet传递给paths.Deliver_Packet()
+                    self.paths.Deliver_Packet_Common(pathID,self.packet)
+                    # 4.修改包信息，real_send_num++
+                    self.Update_FlowInfo(self.packet)
+                    # self.packet.flow.flowInfo.real_send_num+=1
+
+            # 时间过去一个单位
+            time_counter+=1
+
+
     # 返回一个packet
     def Initiate_Packet(self, flow):
         # 根据flows.timelist找到当前需要
@@ -84,7 +115,7 @@ class _MainProcess:
     # 按path查询,path上有该路上flow信息，统计每个flow的发包情况作为真实值
     def Query_Path_Sketch(self):
         # 取到_Path对象
-        print(self.paths.path_list)
+
         for path_key in self.paths.path_list:
 
             path = self.paths.path_list[path_key]
@@ -119,11 +150,70 @@ class _MainProcess:
                 result_list.append(flowID_realValue)
 
             # 写入文件
-            filename="Source\\Result\\path"+str(pathid)+".csv"
+            filename="Source\\Result\\Distribute\\path"+str(pathid)+".csv"
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(result_list)
                 file.close()
+
+
+    def Query_Path_Sketch_Common(self):
+        # 取到_Path对象
+
+        for path_key in self.paths.path_list:
+
+            path = self.paths.path_list[path_key]
+            path.caculate_common()
+            pathid = path_key
+
+            Core_result_list =[]
+            Edge_result_list = []
+            Every_result_list = []
+            for flow in path.flow:
+                flowID = flow.flowInfo.flowID
+                # Core
+                value = flow.flowInfo.packetnum_skech_core
+                flowID_realValue = [pathid,flowID,value]
+                Core_result_list.append(flowID_realValue)
+
+                # Edge
+                value = flow.flowInfo.packetnum_skech_edge
+                flowID_realValue = [pathid,flowID,value]
+                Edge_result_list.append(flowID_realValue)
+                # Every
+                value = flow.flowInfo.packetnum_skech_every
+                flowID_realValue = [pathid,flowID,value]
+                Every_result_list.append(flowID_realValue)
+
+                # Real
+
+                value = flow.flowInfo.real_send_num
+                flowID_realValue = [pathid,flowID,value]
+                Core_result_list.append(flowID_realValue)
+                Edge_result_list.append(flowID_realValue)
+                Every_result_list.append(flowID_realValue)
+            # 写入文件
+            filename="Source\\Result\\Core\\path"+str(pathid)+".csv"
+            with open(filename,"w",newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(Core_result_list)
+                file.close()
+
+            filename="Source\\Result\\Edge\\path"+str(pathid)+".csv"
+            with open(filename,"w",newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(Edge_result_list)
+                file.close()
+
+            filename="Source\\Result\\Every\\path"+str(pathid)+".csv"
+            with open(filename,"w",newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(Every_result_list)
+                file.close()
+
+
+
+
 
 
     # 每次发包时修改流信息

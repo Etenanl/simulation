@@ -8,7 +8,16 @@ class _FlowInfo:
         self.pathID=pathID
         # 存放b，从1号位置开始使用
         self.CU_buckets=[0]*(bucketLength+1)
+        # 分布式发包计数
         self.packetnum_skech = 0
+        # Core发包计数
+        self.packetnum_skech_core = 0
+        # Edge发包计数
+        self.packetnum_skech_edge = 0
+        # Every发包计数
+        self.packetnum_skech_every = 0
+        # CU发包计数
+        self.packetnum_skech_CU = 0
     def Set_pathID(self,pathID):
         self.pathID=pathID
     def Set_FlowInfo(self):

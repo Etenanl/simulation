@@ -1,7 +1,10 @@
+import csv
+
 import Sketch.Switch
 import json
 import  random
 import Utility.Hash
+import os
 """
 
 构造方法，注入四个参数，sketch的d，w，path的存储路径，目前在Source.path.jsonflows为一个列表，元素为flow对象，个数为全部流的数量，
@@ -41,10 +44,29 @@ class _Paths:
         self.Initial_Scope()
         self.Load_flow()
 
+    # 第一次初始化时生成每个switch的sketch大小，并保存在Source\\switch_ws.csv
+    # 这个文件存在时则直接使用
     def initial_switches(self):
-        for i in range(0,self.switch_count+1):
-            pow = random.randint(8,12)
-            self.switches.append(Sketch.Switch._Switch(i,self.d,int(2**pow)))
+        file_path ="Source\\switch_ws.csv"
+        if os.path.exists(file_path):
+            with open(file_path,"r") as ws:
+                ws_reader = csv.reader(ws)
+                index = 0
+                for each in ws_reader:
+                    self.switches.append(Sketch.Switch._Switch(index, self.d, 2**int(each[0])))
+                    index += 1
+
+
+        else:
+            switch_ws = []
+            for i in range(0,self.switch_count+1):
+                pow = random.randint(8,12)
+                self.switches.append(Sketch.Switch._Switch(i, self.d, pow))
+                switch_ws.append([pow])
+            with open(file_path,"w",newline='') as ws:
+                ws_writer = csv.writer(ws)
+                ws_writer.writerows(switch_ws)
+                ws.close()
 
     # 读取Source中path.json，并根据switch和path编号生成path_list
     def Read_Config(self):
@@ -54,12 +76,12 @@ class _Paths:
                 path_id = int(item[0])
                 switchids = item[1]
                 reverse_path_id = path_id+104
-                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.logical_w)
+                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.logical_w,self.d)
                 #
                 # 删去了clone
                 reverse_path = switchids.copy()
                 reverse_path.reverse()
-                self.path_list[reverse_path_id] =_Path(reverse_path_id,reverse_path,self.switches,self.logical_w)
+                self.path_list[reverse_path_id] =_Path(reverse_path_id,reverse_path,self.switches,self.logical_w,self.d)
 
     def Initial_Scope(self):
         for path in self.path_list.values():
@@ -88,12 +110,16 @@ class _Paths:
     # 将scope和packet传递给对应pathID的path，调用_Path.Deliver_Packet(self,scope,packet):
     def Deliver_Packet(self,pathID,packet):
         self.path_list[pathID].Deliver_Packet(packet)
+    def Deliver_Packet_Common(self,pathID,packet):
+        self.path_list[pathID].Deliver_Packet_common(packet)
 
 
 class _Path:
-    def __init__(self,path_ID,switchids,switches,wp):
+    def __init__(self,path_ID,switchids,switches,wp,d):
+        self.d = d
         # 哈希工具类
         self.hash = Utility.Hash._Hash()
+        self.hashfunc = ["MD5","SHA256"]
         # 存放w
         # 这个路径上sketch总w数量
         # 文档中w，值应为2^16
@@ -119,7 +145,7 @@ class _Path:
     #common sketch:
     def Deliver_Packet_common(self,packet):
         for switch in self.path:
-            switch.Process_Packet_common(self.path_ID,packet)
+            switch.Process_Packet_common(packet)
 
     #CU sketch:
     def Deliver_Packet_CU(self,packet):
@@ -153,7 +179,7 @@ class _Path:
             skethes[1].extend(temp_sketch[1])
         # print(skethes)
         return skethes
-    def path_query1(self):
+    def path_query_distrubute(self):
         skethes = []
         for switch in self.path:
             skethes.append(switch.Query())
@@ -164,13 +190,13 @@ class _Path:
         pass
 
     def caculate(self):
-        sketches = self.path_query1()
+        sketches = self.path_query_distrubute()
         #拼起来
         for flow in self.flow:
             hash_value1 = 0
             hash_value2 = 0
-            hash1 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,"MD5")
-            hash2 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,"SHA256")
+            hash1 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,self.hashfunc[0])
+            hash2 = self.hash.Hash_Function(str(flow.flowInfo.flowID),self.logical_w,self.hashfunc[1])
             for i in range(0, len(self.path)):
                 scope_i = self.scope[i]
                 switch_i = self.path[i]
@@ -188,6 +214,33 @@ class _Path:
             #print(calcu)
 
     def caculate_common(self):
-        pass
+
+        # 取得所有sketch
+        sketches = self.path_query_distrubute()
+        # 取得path上流
+        for flow in self.flow:
+            # 所有结果存在一个list
+            result_list = []
+            # 对于每一个流的每一个switch
+            for switch in self.path:
+
+                # 存放这个switch上每行的结果
+                switch_result = []
+                # 计算
+                for i in range(0,self.d):
+                    hash = int(self.hash.Hash_Function(str(flow.flowInfo.flowID),switch.ws,self.hashfunc[i]))
+                    switch_result.append(int(switch.active_sketch.sketch_table[i][hash]))
+                # 在result_List上放上这个switch的最小值
+                result_list.append(int(min(switch_result)))
+
+            # 计算core
+            flow.flowInfo.packetnum_skech_core = result_list[int((len(result_list)-1)/2)]
+            # 中间位置的下标为
+            # 计算edge
+            flow.flowInfo.packetnum_skech_edge = result_list[0]
+
+            # 计算every
+            flow.flowInfo.packetnum_skech_every = min(result_list)
+
     def caculate_CU(self):
         pass
