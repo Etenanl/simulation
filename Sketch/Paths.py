@@ -112,6 +112,8 @@ class _Paths:
         self.path_list[pathID].Deliver_Packet(packet)
     def Deliver_Packet_Common(self,pathID,packet):
         self.path_list[pathID].Deliver_Packet_common(packet)
+    def Deliver_Packet_CU(self,pathID,packet):
+        self.path_list[pathID].Deliver_Packet_CU(packet)
 
 
 class _Path:
@@ -207,11 +209,7 @@ class _Path:
                     index2 = (switch_i.ws-1) * (hash2 - round(scope_i[0] * self.logical_w) - 1) / (round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
                     hash_value2 = sketches[i][1][int(index2)]
             flow.flowInfo.packetnum_skech = min(hash_value1,hash_value2)
-            #找对应的值
-            #取第一行和第二行的min
-            calcu = min(hash_value1,hash_value2)
-            flow.flowInfo.packetnum_skech = calcu
-            #print(calcu)
+
 
     def caculate_common(self):
 
@@ -238,9 +236,26 @@ class _Path:
             # 中间位置的下标为
             # 计算edge
             flow.flowInfo.packetnum_skech_edge = result_list[0]
-
             # 计算every
             flow.flowInfo.packetnum_skech_every = min(result_list)
 
     def caculate_CU(self):
-        pass
+        sketches = self.path_query_distrubute()
+        # 拼起来
+        for flow in self.flow:
+            hash_value1 = 0
+            hash_value2 = 0
+            hash1 = self.hash.Hash_Function(str(flow.flowInfo.flowID), self.logical_w, self.hashfunc[0])
+            hash2 = self.hash.Hash_Function(str(flow.flowInfo.flowID), self.logical_w, self.hashfunc[1])
+            for i in range(0, len(self.path)):
+                scope_i = self.scope[i]
+                switch_i = self.path[i]
+                if hash1 >= round(scope_i[0] * self.logical_w) and hash1 <= round(scope_i[1] * self.logical_w) - 1:
+                    index1 = (switch_i.ws - 1) * (hash1 - round(scope_i[0] * self.logical_w) - 1) / (
+                                round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
+                    hash_value1 = sketches[i][0][int(index1)]
+                if hash2 >= round(scope_i[0] * self.logical_w) and hash2 <= round(scope_i[1] * self.logical_w) - 1:
+                    index2 = (switch_i.ws - 1) * (hash2 - round(scope_i[0] * self.logical_w) - 1) / (
+                                round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
+                    hash_value2 = sketches[i][1][int(index2)]
+            flow.flowInfo.packetnum_skech = min(hash_value1, hash_value2)

@@ -30,17 +30,30 @@ class _Basic_Sketch:
             # 改范围
             if hash >= round(scope[0]*wp) and hash <= round(scope[1]*wp)-1:
                 index = (self.sketch_w-1)*(hash-round(scope[0]*wp)-1)/(round(scope[1]*wp) - round(scope[0]*wp) -1)
-                self.sketch_table[i][int(index)] += 1
+                self.sketch_table[i][int(index)] += packet.packet_size
     
     def Receive_packet_common(self,packet):
 
         for i in range(0,self.d):
             hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),self.sketch_w,self.hashfunc[i])
-            self.sketch_table[i][hash] += 1
+            self.sketch_table[i][hash] += packet.packet_size
     
     #
     def Receive_packet_CU(self,packet,scope,wp):
-        pass
+        for i in range(0, self.d):
+            hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID), wp, self.hashfunc[i])
+            # 改范围
+            if hash >= round(scope[0] * wp) and hash <= round(scope[1] * wp) - 1:
+                index = int((self.sketch_w - 1) * (hash - round(scope[0] * wp) - 1) / (
+                            round(scope[1] * wp) - round(scope[0] * wp) - 1))
+                if self.sketch_table[i][index]+packet.packet_size<packet.flow_count_CU_min:
+                    packet.flow_count_CU_min = self.sketch_table[i][index]+packet.packet_size
+                    self.sketch_table[i][index] += packet.packet_size
+                elif self.sketch_table[i][index]+packet.packet_size >= packet.flow_count_CU_min > self.sketch_table[i][index] :
+                    self.sketch_table[i][index] = packet.flow_count_CU_min
+                else :
+                    pass
+
 
 
         

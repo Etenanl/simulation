@@ -14,7 +14,7 @@ import Sketch.Paths
 
 if __name__ == '__main__':
     # 程序入口
-    sketch = Function.MainProcess._MainProcess(FlowCount=5000)
+    sketch = Function.MainProcess._MainProcess(FlowCount=10000)
     # 构造方法
     # MainProcess(self,DataSetPath = "Source\\test.csv",TopoPath = "Source\\path.json",FlowCount = 1000,LogicalW = 65536, GlobalD = 2,RuningTime = 2):
     # 参数含义依次为flow数据集地址，path拓扑地址，使用的流数，文档中w（2^16），文档中d(2),运行秒数（每1秒每个流发pps个包）
@@ -27,7 +27,9 @@ if __name__ == '__main__':
     sketch.Main_Process()
     # 查询
     sketch.Query_Path_Sketch()
-
+    # sketch.Main_Process_CU()
+    # # 查询
+    # sketch.Query_Path_Sketch_CU()
 
 
 

@@ -8,11 +8,16 @@ class _Packet:
         #
         self.flow = Common.Flow._Flow(0,0)
         self.packet_data = Common.Packet._PacketData()
+        self.flow_count_CU_min = 10000000
+        self.packet_size = 1
 
     # 用注入的flow信息，对当前对象赋值
-    def New_Packet(self,flow,packetData=None):
+    def New_Packet(self,flow,packetData=None,packetMaxSize = 1):
         self.flow=flow
         self.packet_data=packetData
+        self.flow_count_CU_min = 10000000
+        # 留一个接口调整packet大小
+        self.packet_size = packetMaxSize
 
 
 

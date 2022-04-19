@@ -39,6 +39,11 @@ class _MainProcess:
 
     # 返回一个packet
     # 循环运行的主程序
+
+
+
+
+
     def Main_Process(self):
         # 用来计算模拟时间，表示秒
         time_counter = 0
@@ -98,6 +103,37 @@ class _MainProcess:
             # 时间过去一个单位
             time_counter+=1
 
+    def Main_Process_CU(self):
+        # 用来计算模拟时间，表示秒
+        time_counter = 0
+        while time_counter <= self.running_time:
+            # 用来模拟一个单位时间内的时间流动
+            timer = 0
+            for time in self.flows.time_list.time_list:
+                if timer > self.time_granularity:
+                    break
+                while time.time>timer:
+                    timer += 1
+                # 处理转发
+                for each in time.flows:
+                    # 对于每个flow，做以下操作，
+                    # 1.找到对应pathID，以及flowID，
+                    # flowID = each.flowInfo.flowID
+                    pathID = each.flowInfo.pathID
+
+                    # 2.将flow封装成Packet
+                    self.packet.New_Packet(each)
+                    # 3.将Packet传递给paths.Deliver_Packet()
+                    self.paths.Deliver_Packet_CU(pathID,self.packet)
+                    # 4.修改包信息，real_send_num++
+                    self.Update_FlowInfo(self.packet)
+                    # self.packet.flow.flowInfo.real_send_num+=1
+
+            # 时间过去一个单位
+            time_counter+=1
+
+
+
 
     # 返回一个packet
     def Initiate_Packet(self, flow):
@@ -117,7 +153,6 @@ class _MainProcess:
         # 取到_Path对象
 
         for path_key in self.paths.path_list:
-
             path = self.paths.path_list[path_key]
             path.caculate()
             pathid = path_key
@@ -155,11 +190,12 @@ class _MainProcess:
                 writer = csv.writer(file)
                 writer.writerows(result_list)
                 file.close()
+        for switch in self.paths.switches:
+            switch.refresh_sketch()
 
 
     def Query_Path_Sketch_Common(self):
         # 取到_Path对象
-
         for path_key in self.paths.path_list:
 
             path = self.paths.path_list[path_key]
@@ -211,15 +247,48 @@ class _MainProcess:
                 writer.writerows(Every_result_list)
                 file.close()
 
+        for switch in self.paths.switches:
+            switch.refresh_sketch()
+    def Query_Path_Sketch_CU(self):
+        # 取到_Path对象
 
+        for path_key in self.paths.path_list:
 
+            path = self.paths.path_list[path_key]
+            path.caculate_CU()
+            pathid = path_key
+            # sketches = path.path_query()
+            # 暂存该path下的所有内容每两个元素为[pahtid,flowid,模拟值][pahtid,flowid,真实值]
+            result_list =[]
+            for flow in path.flow:
+                flowID = flow.flowInfo.flowID
 
+                value = flow.flowInfo.packetnum_skech
+                flowID_realValue = [pathid,flowID,value]
+                result_list.append(flowID_realValue)
 
+                value = flow.flowInfo.real_send_num
+                #print("value"+str(value))
+                flowID_realValue = [pathid,flowID,value]
+                result_list.append(flowID_realValue)
+
+            # 写入文件
+            filename="Source\\Result\\CU\\path"+str(pathid)+".csv"
+            with open(filename,"w",newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(result_list)
+                file.close()
+
+        for switch in self.paths.switches:
+            switch.refresh_sketch()
 
     # 每次发包时修改流信息
     def Update_FlowInfo(self, packet):
-        packet.flow.flowInfo.real_send_num += 1
+        packet.flow.flowInfo.real_send_num += packet.packet_size
 
     # 抛出运行接口
-    def Run(self):
+    def Run_Send(self):
+        pass
+
+    def Run_Query(self):
         pass
