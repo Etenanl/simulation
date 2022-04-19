@@ -26,4 +26,4 @@ def get_entropy_RE(map_flow_id_to_size: map):
         estimated_flow_size_array.append(estimated_value)
     estimated_entropy = getEntropy(estimated_flow_size_array)
     real_entropy = getEntropy(real_flow_size_array)
-    return get_RE(real_entropy, estimated_entropy)
+    return abs(get_RE(real_entropy, estimated_entropy))

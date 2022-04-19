@@ -62,11 +62,12 @@ def get_F1Score(map_flow_id_to_size: map, threshold: float):
     realBoolList = [False for i in range(0, flow_num)]
     judgeBoolList = [False for i in range(0, flow_num)]
     all_flow_ids = map_flow_id_to_size.keys()
-    for i in range(0, len(all_flow_ids)):
-        flow_id = all_flow_ids[i]
+    index = 0
+    for flow_id in all_flow_ids:
         estimated_value, real_value = map_flow_id_to_size[flow_id]
         if estimated_value >= estimated_threshold_value:
-            judgeBoolList[i] = True
+            judgeBoolList[index] = True
         if real_value >= real_threshold_value:
-            realBoolList[i] = True
+            realBoolList[index] = True
+        index = index + 1
     return _F1_Score(realBoolList, judgeBoolList).getF1Score()
