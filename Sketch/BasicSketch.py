@@ -54,6 +54,17 @@ class _Basic_Sketch:
                 else :
                     pass
 
+    def Occupied_NUM(self):
+        counts = [0 for x in range(0, self.d)]
+        sketch_list = self.sketch_table
+
+        for i in range(0,self.sketch_w):
+            for j in range(0,self.d):
+                if not sketch_list[j][i] == 0:
+                    counts[j] += 1
+        sum(counts)
+        return sum(counts) /(self.sketch_w * self.d)
+
 
 
         

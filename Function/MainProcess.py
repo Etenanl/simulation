@@ -185,8 +185,7 @@ class _MainProcess:
                 writer = csv.writer(file)
                 writer.writerows(result_list)
                 file.close()
-        for switch in self.paths.switches:
-            switch.refresh_sketch()
+
 
 
     def Query_Path_Sketch_Common(self):
@@ -251,8 +250,7 @@ class _MainProcess:
                 writer.writerows(Every_result_list)
                 file.close()
 
-        for switch in self.paths.switches:
-            switch.refresh_sketch()
+
     def Query_Path_Sketch_CU(self):
         # 取到_Path对象
 
@@ -283,8 +281,7 @@ class _MainProcess:
                 writer.writerows(result_list)
                 file.close()
 
-        for switch in self.paths.switches:
-            switch.refresh_sketch()
+
 
     # 每次发包时修改流信息
     def Update_FlowInfo(self, packet):
@@ -304,7 +301,7 @@ class _MainProcess:
     def Run_Query(self,Type = "Distribute",path = "Source\\Result"):
         self.result_path = path+"\\"+Type
         if not os.path.exists(self.result_path):
-            os.mkdir(self.result_path)
+            os.makedirs(self.result_path)
         print("正在查询")
         if Type == "Distribute":
             self.Query_Path_Sketch()
@@ -314,5 +311,20 @@ class _MainProcess:
             self.Query_Path_Sketch_CU()
         else:
             print("查询类型有误")
+
+        Occupation = []
+        for switch in self.paths.switches:
+            Occupation.append([switch.switch_ID,switch.Occupied_insketch()])
+        print(str(self.flow_count) + "    ")
+        print(Occupation)
+
+        filename = self.result_path + "_Occupation.csv"
+        with open(filename, "w", newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(Occupation)
+            file.close()
+
+
         for switch in self.paths.switches:
             switch.refresh_sketch()
+

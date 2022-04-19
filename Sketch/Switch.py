@@ -25,6 +25,8 @@ class _Switch:
 
     # 返回对应sketch上的sketch_table内容，列表返回，比如d=2，w=3返回[[1,2,3],[1,2,3]]
 
+    def Occupied_insketch(self):
+        return  self.active_sketch.Occupied_NUM()
     def refresh_sketch(self):
         self.active_sketch=self.Initiate_Active_Sketch(self.d,self.ws)
        

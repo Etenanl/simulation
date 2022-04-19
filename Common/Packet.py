@@ -19,7 +19,9 @@ class _Packet:
         self.packet_data=packetData
         self.flow_count_CU_min = 10000000
         # 留一个接口调整packet大小
-        self.packet_size = random.randint(1,100)
+        # self.packet_size = random.randint(1,100)
+        self.packet_size = 1
+
 
 
 

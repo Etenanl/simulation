@@ -88,6 +88,7 @@ class _Paths:
             path.Scope_Count()
 
     def Load_flow(self):
+        # 平均分配
         pathid = 1
         for flow in self.flows:
             path = self.path_list[pathid]
@@ -97,6 +98,16 @@ class _Paths:
                 pathid = 1
             else:
                 pathid += 1
+
+
+        # # 随机分配
+        # for flow in self.flows:
+        #     pathid = random.randint(1,208)
+        #     path = self.path_list[pathid]
+        #     path.flow.append(flow)
+        #     flow.flowInfo.pathID = pathid
+
+
 
     # 查询，给出pathID，返回这条路径上所有sketch的sketch_table
     def Query(self,Path_ID):
