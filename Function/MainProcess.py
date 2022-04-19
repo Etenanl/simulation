@@ -1,4 +1,5 @@
 import csv
+import os.path
 
 import Common.Flows
 import Common.Packet
@@ -35,19 +36,13 @@ class _MainProcess:
         # 初始化路径
         self.paths = Sketch.Paths._Paths(self.path_path, self.flows.flows, self.d, self.w)
 
-
-
-    # 返回一个packet
-    # 循环运行的主程序
-
-
-
+        self.result_path = "Source\\Restult"
 
 
     def Main_Process(self):
         # 用来计算模拟时间，表示秒
         time_counter = 0
-        while time_counter <= self.running_time:
+        while time_counter < self.running_time:
             # 用来模拟一个单位时间内的时间流动
             timer = 0
             for time in self.flows.time_list.time_list:
@@ -72,12 +67,13 @@ class _MainProcess:
 
             # 时间过去一个单位
             time_counter+=1
+            print("发包至第"+str(time_counter)+"秒，"+"共有"+str(self.running_time)+"秒，")
 
 
     def Main_Process_Common(self):
         # 用来计算模拟时间，表示秒
         time_counter = 0
-        while time_counter <= self.running_time:
+        while time_counter < self.running_time:
             # 用来模拟一个单位时间内的时间流动
             timer = 0
             for time in self.flows.time_list.time_list:
@@ -102,11 +98,12 @@ class _MainProcess:
 
             # 时间过去一个单位
             time_counter+=1
+            print("发包至第" + str(time_counter) + "秒，" + "共有" + str(self.running_time) + "秒，")
 
     def Main_Process_CU(self):
         # 用来计算模拟时间，表示秒
         time_counter = 0
-        while time_counter <= self.running_time:
+        while time_counter < self.running_time:
             # 用来模拟一个单位时间内的时间流动
             timer = 0
             for time in self.flows.time_list.time_list:
@@ -131,9 +128,7 @@ class _MainProcess:
 
             # 时间过去一个单位
             time_counter+=1
-
-
-
+            print("发包至第" + str(time_counter) + "秒，" + "共有" + str(self.running_time) + "秒，")
 
     # 返回一个packet
     def Initiate_Packet(self, flow):
@@ -185,7 +180,7 @@ class _MainProcess:
                 result_list.append(flowID_realValue)
 
             # 写入文件
-            filename="Source\\Result\\Distribute\\path"+str(pathid)+".csv"
+            filename=self.result_path+"\\path"+str(pathid)+".csv"
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(result_list)
@@ -229,19 +224,28 @@ class _MainProcess:
                 Edge_result_list.append(flowID_realValue)
                 Every_result_list.append(flowID_realValue)
             # 写入文件
-            filename="Source\\Result\\Core\\path"+str(pathid)+".csv"
+
+
+
+            filename=self.result_path+"\\Core\\path"+str(pathid)+".csv"
+            if not os.path.exists(self.result_path+"\\Core"):
+                os.mkdir(self.result_path+"\\Core")
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(Core_result_list)
                 file.close()
 
-            filename="Source\\Result\\Edge\\path"+str(pathid)+".csv"
+            filename=self.result_path+"\\Edge\\path"+str(pathid)+".csv"
+            if not os.path.exists(self.result_path+"\\Edge"):
+                os.mkdir(self.result_path+"\\Edge")
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(Edge_result_list)
                 file.close()
 
-            filename="Source\\Result\\Every\\path"+str(pathid)+".csv"
+            filename=self.result_path+"\\Every\\path"+str(pathid)+".csv"
+            if not os.path.exists(self.result_path+"\\Every"):
+                os.mkdir(self.result_path+"\\Every")
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(Every_result_list)
@@ -273,7 +277,7 @@ class _MainProcess:
                 result_list.append(flowID_realValue)
 
             # 写入文件
-            filename="Source\\Result\\CU\\path"+str(pathid)+".csv"
+            filename=self.result_path+"\\path"+str(pathid)+".csv"
             with open(filename,"w",newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows(result_list)
@@ -287,8 +291,28 @@ class _MainProcess:
         packet.flow.flowInfo.real_send_num += packet.packet_size
 
     # 抛出运行接口
-    def Run_Send(self):
-        pass
+    def Run_Send(self,Type = "Distribute"):
+        if Type == "Distribute":
+            self.Main_Process()
+        elif Type == "Common":
+            self.Main_Process_Common()
+        elif Type == "CU":
+            self.Main_Process_CU()
+        else:
+            print("查询类型有误")
 
-    def Run_Query(self):
-        pass
+    def Run_Query(self,Type = "Distribute",path = "Source\\Result"):
+        self.result_path = path+"\\"+Type
+        if not os.path.exists(self.result_path):
+            os.mkdir(self.result_path)
+        print("正在查询")
+        if Type == "Distribute":
+            self.Query_Path_Sketch()
+        elif Type == "Common":
+            self.Query_Path_Sketch_Common()
+        elif Type == "CU":
+            self.Query_Path_Sketch_CU()
+        else:
+            print("查询类型有误")
+        for switch in self.paths.switches:
+            switch.refresh_sketch()

@@ -1,3 +1,5 @@
+import random
+
 import Common.Flow
 # _Packet作为包的对象，每次发包将流信息注入，_PacketData存放包携带的信息，如后续Counting Multipath Flows中的数组b
 # 不含功能，只传递数据
@@ -17,7 +19,7 @@ class _Packet:
         self.packet_data=packetData
         self.flow_count_CU_min = 10000000
         # 留一个接口调整packet大小
-        self.packet_size = packetMaxSize
+        self.packet_size = random.randint(1,100)
 
 
 
