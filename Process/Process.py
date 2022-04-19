@@ -7,10 +7,10 @@ csv文件中，每一个flow对应两行，第一行为sketch模拟的值，第�
 
 """
 import os
-from Process.ARE import get_ARE
-from Process.WMRE import get_WMRE
-from Process.F1_Score import get_F1Score
-from Process.RE import get_entropy_RE
+from ARE import get_ARE
+from WMRE import get_WMRE
+from F1_Score import get_F1Score
+from RE import get_entropy_RE
 '''
 计算前使用initialize初始化数据结构
 之后可以直接调用write_xxx函数写入对应的文件中
@@ -36,7 +36,7 @@ class _Process:
                     path_id = estimated_strings[0]
                     flow_id = estimated_strings[1]
                     estimated_value = int(estimated_strings[2])
-                    real_value = int((real_value.split(",")[2]))
+                    real_value = int((real_line.split(",")[2]))
                     if flow_id not in self.map_flow_id_to_size.keys():
                         self.map_flow_id_to_size[flow_id] = [estimated_value, real_value]
                     #多路径
@@ -44,18 +44,21 @@ class _Process:
                         self.map_flow_id_to_size[flow_id][0] = self.map_flow_id_to_size[flow_id][0] + estimated_value
                         self.map_flow_id_to_size[flow_id][1] = self.map_flow_id_to_size[flow_id][1] + real_value
 
+    def clear(self):
+        self.map_flow_id_to_size = {}
+
     def write_ARE(self, outPath):
-        with open(outPath, "rw") as fout:
+        with open(outPath, "w+") as fout:
             fout.write(str(get_ARE(self.map_flow_id_to_size)))
 
     def write_WMRE(self, outPath):
-        with open(outPath, "rw") as fout:
+        with open(outPath, "w+") as fout:
             fout.write(str(get_WMRE(self.map_flow_id_to_size)))
 
     def write_F1Score(self, outPath, threshold: float):
-        with open(outPath, "rw") as fout:
+        with open(outPath, "w+") as fout:
             fout.write(str(get_F1Score(self.map_flow_id_to_size, threshold)))
 
     def write_entropy_RE(self, outPath):
-        with open(outPath, "rw") as fout:
+        with open(outPath, "w+") as fout:
             fout.write(str(get_entropy_RE(self.map_flow_id_to_size)))
