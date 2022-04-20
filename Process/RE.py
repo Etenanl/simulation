@@ -17,7 +17,7 @@ def getEntropy(flow_size_array: list):
 def get_RE(truth: float, estimated: float):
     return (truth - estimated) / truth
 
-def get_entropy_RE(map_flow_id_to_size: map):
+def get_entropy_RE(map_flow_id_to_size):
     real_flow_size_array = []
     estimated_flow_size_array = []
     for key, value in map_flow_id_to_size.items():

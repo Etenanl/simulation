@@ -126,6 +126,27 @@ class _Paths:
     def Deliver_Packet_CU(self,pathID,packet):
         self.path_list[pathID].Deliver_Packet_CU(packet)
 
+    # 查询每个path对应的Scope逻辑
+    def Query_Scope(self):
+        Scope_List = []
+        for path_key in self.path_list:
+            path = self.path_list[path_key]
+            path_scope = [path_key]
+            for each in path.scope:
+                path_scope.append([round(each[0],4),round(each[1],4)])
+            # for switch in path.path_sketch:
+            #     path_scope.append(switch.Scope[path_key])
+            Scope_List.append(path_scope)
+        def Take_PPS(elem):
+            return elem[0]
+
+        # 按照pps排序
+        Scope_List.sort(key=Take_PPS, reverse=False)
+
+        return Scope_List
+
+
+
 
 class _Path:
     def __init__(self,path_ID,switchids,switches,wp,d):
@@ -184,6 +205,8 @@ class _Path:
             sw.wps[self.path_ID] = self.logical_w
             current = next
 
+
+
     def path_query(self):
         skethes = [[],[]]
         for switch in self.path:
@@ -202,6 +225,8 @@ class _Path:
     def Scope_Update(self):
         pass
 
+
+    # 计算distribute策略下这条路径上的每个flow的值
     def caculate(self):
         sketches = self.path_query_distrubute()
         #拼起来
@@ -221,7 +246,7 @@ class _Path:
                     hash_value2 = sketches[i][1][int(index2)]
             flow.flowInfo.packetnum_skech = min(hash_value1,hash_value2)
 
-
+    # 计算common策略下这条路径上的每个flow的值
     def caculate_common(self):
 
         # 取得所有sketch
@@ -250,6 +275,9 @@ class _Path:
             # 计算every
             flow.flowInfo.packetnum_skech_every = min(result_list)
 
+
+
+    # 计算CU策略下这条路径上的每个flow的值
     def caculate_CU(self):
         sketches = self.path_query_distrubute()
         # 拼起来

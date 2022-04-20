@@ -49,9 +49,7 @@ class _Basic_Sketch:
                 if self.sketch_table[i][index]+packet.packet_size<packet.flow_count_CU_min:
                     packet.flow_count_CU_min = self.sketch_table[i][index]+packet.packet_size
                     self.sketch_table[i][index] += packet.packet_size
-                elif self.sketch_table[i][index]+packet.packet_size >= packet.flow_count_CU_min > self.sketch_table[i][index] :
-                    self.sketch_table[i][index] = packet.flow_count_CU_min
-                else :
+                else:
                     pass
 
     def Occupied_NUM(self):

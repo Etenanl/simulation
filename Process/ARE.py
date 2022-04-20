@@ -1,7 +1,7 @@
 import os
 
 
-def get_ARE(map_flow_id_to_size: map):
+def get_ARE(map_flow_id_to_size):
     ARE_value = 0.0
     for key, value in map_flow_id_to_size.items():
         simulated_value, real_value = value

@@ -11,26 +11,7 @@ import Utility.Hash
 import Sketch.Paths
 
 
-
-if __name__ == '__main__':
-    # # 程序入口
-    # sketch = Function.MainProcess._MainProcess(FlowCount=10000,RuningTime=1)
-    # # 构造方法
-    # # MainProcess(self,DataSetPath = "Source\\test.csv",TopoPath = "Source\\path.json",FlowCount = 1000,LogicalW = 65536, GlobalD = 2,RuningTime = 2):
-    # # 参数含义依次为flow数据集地址，path拓扑地址，使用的流数，文档中w（2^16），文档中d(2),运行秒数（每1秒每个流发pps个包）
-    #
-    # # 只测试少数几个路径上流的发包，可以调整path对flow的分配逻辑，在Path.Load_flow()
-    # # 默认每个报大小为1，调整包大小可在Common.Packet.New_Packet()方法里给packet_size给个随机数
-    #
-    #
-    # # # 模拟发包，参数为"Distribute","CU","Common",分别为分布式sketch，CU和【Core，Edge，Every】
-    # # sketch.Run_Send("Common")
-    # # # 查询，Tyoe参数同上，path为输出结果文件夹，如下例子path文件在"Source\\Result\\CU\\path1.csv"
-    # # sketch.Run_Query(Type="Common", path="Source\\Result")
-    # sketch.Run_Send("Distribute")
-    # # 查询，Tyoe参数同上，path为输出结果文件夹，如下例子path文件在"Source\\Result\\CU\\path1.csv"
-    # sketch.Run_Query(Type="Distribute", path="Source\\Result")
-
+def Run():
     Num = []
     num = 5000
     for i in range(0,31):
@@ -39,9 +20,117 @@ if __name__ == '__main__':
     Types = ["Distribute","Common","CU"]
     for each in Num:
         for Type in Types:
-            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=1)
+            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=5)
             sketch.Run_Send(Type)
             sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
+
+
+
+
+if __name__ == '__main__':
+
+
+    sketch = Function.MainProcess._MainProcess()
+
+    path = "Source\\Total\\Scope.csv"
+    with open(path, "w",newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(sketch.paths.Query_Scope())
+
+        file.close()
+
+
+
+    Num = []
+    num = 10000
+
+
+    # CU = [["ARE",],["WMRE",],["F1",],["RE",]]
+    # Distribute = [["ARE",],["WMRE",],["F1",],["RE",]]
+    # CORE = [["ARE",],["WMRE",],["F1",],["RE",]]
+    # EDGE = [["ARE",],["WMRE",],["F1",],["RE",]]
+    # EVERY = [["ARE",],["WMRE",],["F1",],["RE",]]
+    # title = ["CU","Distribute","CORE","EDGE","EVERY"]
+    # result = [CU,Distribute,CORE,EDGE,EVERY]
+    # for i in range(0,8):
+    #     Num.append(num)
+    #
+    #     path = "Source\\"+str(num)+"\\Analyze\\result.csv"
+    #     with open(path,"r") as file:
+    #         reader = csv.reader(file)
+    #         count = 0
+    #         for row in reader:
+    #             if len(row)<=2:
+    #                 continue
+    #             for i in range(0,len(row)):
+    #                 result[count][i].append(row[i])
+    #             count+=1
+    #     num += 10000
+    #
+    # path = "Source\\Total\\result.csv"
+    # with open(path, "w",newline='') as file:
+    #     writer = csv.writer(file)
+    #     count = 0
+    #     for each in result:
+    #         writer.writerow(title[count])
+    #         writer.writerows(each)
+    #         count +=1
+    #     file.close()
+    #
+    #
+    #
+    #
+    # Common_result = []
+    # CU_result = []
+    # num = 10000
+    # for i in range(0,25):
+    #     Common_result.append([i+1])
+    #     CU_result.append([i+1])
+    #
+    # for i in range(0,8):
+    #
+    #     path = "Source\\"+str(num)+"\\Result\\Common_Occupation.csv"
+    #     with open(path,"r") as file:
+    #         reader = csv.reader(file)
+    #         count = 0
+    #         for row in reader:
+    #             if row[0] == 0:
+    #                 continue
+    #             Common_result[count].append(round(float(row[1]),4))
+    #             count+=1
+    #     num += 10000
+    # num = 10000
+    # for i in range(0,8):
+    #
+    #     path = "Source\\"+str(num)+"\\Result\\CU_Occupation.csv"
+    #     with open(path,"r") as file:
+    #         reader = csv.reader(file)
+    #         count = 0
+    #         for row in reader:
+    #             CU_result[count].append(round(float(row[1]),4))
+    #             count+=1
+    #     num += 10000
+    #
+    # path = "Source\\Total\\result_occupation.csv"
+    # with open(path, "w",newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(Common_result)
+    #     writer.writerow("  ")
+    #     writer.writerows(CU_result)
+    #     file.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

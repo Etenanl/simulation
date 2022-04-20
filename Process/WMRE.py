@@ -1,5 +1,5 @@
 import os
-def get_WMRE(map_flow_id_to_size: map):
+def get_WMRE(map_flow_id_to_size):
     WMRE_deno = 0.0 #分母
     WMRE_mol = 0.0 #分子
     real_map_flow_size_to_num = {} #key: real flow size; value: flow num of this flow size

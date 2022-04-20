@@ -1,6 +1,7 @@
 import os
 import heapq
 import math
+
 class _F1_Score:
     '''
             realBoolList: a list of real value, 1 means a positive sample, 0 means a negative sample
@@ -41,7 +42,7 @@ class _F1_Score:
         PR = self.getPrecision()
         return 2 * RR * PR / (RR + PR)
 
-def get_F1Score(map_flow_id_to_size: map, threshold: float):
+def get_F1Score(map_flow_id_to_size, threshold: float):
     flow_num = len(map_flow_id_to_size.keys())
     heavy_hitter_flow_num = int(math.ceil(float(flow_num) * threshold))
     h_real_array = []
