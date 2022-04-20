@@ -18,6 +18,8 @@ class _Basic_Sketch:
 
         for i in range (0,self.d):
             self.sketch_table.append( [0 for x in range(0, self.sketch_w)])
+
+    # distribute模式下收包处理逻辑
     def Receive_packet(self,packet,scope,wp):
 
         for i in range(0,self.d):
@@ -27,35 +29,40 @@ class _Basic_Sketch:
             #     print(str(i)+"   "+str(index)+"    "+str(wp)+"    "+str(self.w))
             #     self.sketch_table[i][int(index)] += 1
             hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),wp,self.hashfunc[i])
+            # 查看hash出来的值是否在这个sketch上
             # 改范围
             if hash >= round(scope[0]*wp) and hash <= round(scope[1]*wp)-1:
                 index = (self.sketch_w-1)*(hash-round(scope[0]*wp)-1)/(round(scope[1]*wp) - round(scope[0]*wp) -1)
                 self.sketch_table[i][int(index)] += packet.packet_size
-    
-    def Receive_packet_common(self,packet):
 
+    # common模式下收包处理逻辑
+    def Receive_packet_common(self,packet):
+        # 对每一行进行hash
         for i in range(0,self.d):
             hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),self.sketch_w,self.hashfunc[i])
             self.sketch_table[i][hash] += packet.packet_size
     
-    #
+    # CU模式下收包处理逻辑
     def Receive_packet_CU(self,packet,scope,wp):
         for i in range(0, self.d):
             hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID), wp, self.hashfunc[i])
-            # 改范围
+            # 对每一行进行hash，并按照算法进行处理
             if hash >= round(scope[0] * wp) and hash <= round(scope[1] * wp) - 1:
                 index = int((self.sketch_w - 1) * (hash - round(scope[0] * wp) - 1) / (
                             round(scope[1] * wp) - round(scope[0] * wp) - 1))
+                # 这里修改了算法逻辑，第二种情况将不会进行减小，
+                #
+                #
                 if self.sketch_table[i][index]+packet.packet_size<packet.flow_count_CU_min:
                     packet.flow_count_CU_min = self.sketch_table[i][index]+packet.packet_size
                     self.sketch_table[i][index] += packet.packet_size
                 else:
                     pass
-
+    # 计算sketch占用率
     def Occupied_NUM(self):
         counts = [0 for x in range(0, self.d)]
         sketch_list = self.sketch_table
-
+        # 在sketch_table里计数统计非0个数
         for i in range(0,self.sketch_w):
             for j in range(0,self.d):
                 if not sketch_list[j][i] == 0:

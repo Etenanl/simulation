@@ -297,7 +297,7 @@ class _MainProcess:
             self.Main_Process_CU()
         else:
             print("查询类型有误")
-
+    # 查询接口
     def Run_Query(self,Type = "Distribute",path = "Source\\Result"):
         self.result_path = path+"\\"+Type
         if not os.path.exists(self.result_path):
@@ -311,12 +311,12 @@ class _MainProcess:
             self.Query_Path_Sketch_CU()
         else:
             print("查询类型有误")
-
+        # 计算每个sketch的占有率
         Occupation = []
         for switch in self.paths.switches:
             Occupation.append([switch.switch_ID,switch.Occupied_insketch()])
-        print(str(self.flow_count) + "    ")
-        print(Occupation)
+        # print(str(self.flow_count) + "    ")
+        # print(Occupation)
 
         filename = self.result_path + "_Occupation.csv"
         with open(filename, "w", newline='') as file:
@@ -324,7 +324,7 @@ class _MainProcess:
             writer.writerows(Occupation)
             file.close()
 
-
+        # 查询完成后对sketch进行清零
         for switch in self.paths.switches:
             switch.refresh_sketch()
 

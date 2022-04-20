@@ -23,13 +23,13 @@ class _Switch:
         self.path_number = 0    #经过本交换机的path总数
 
 
-    # 返回对应sketch上的sketch_table内容，列表返回，比如d=2，w=3返回[[1,2,3],[1,2,3]]
-
+    # 查询sketch占有率
     def Occupied_insketch(self):
         return  self.active_sketch.Occupied_NUM()
+    # 将sketch清零
     def refresh_sketch(self):
         self.active_sketch=self.Initiate_Active_Sketch(self.d,self.ws)
-       
+    # 返回switch上的sketch_table
     def Query(self):
         # print(self.active_sketch.sketch_table)
         ans =  self.active_sketch.sketch_table.copy()
@@ -52,9 +52,10 @@ class _Switch:
         else:
             return False
 
+    # 接受Common包
     def Process_Packet_common(self,packet):
         self.active_sketch.Receive_packet_common(packet)
-    
+    # 接受CU包
     def Process_Packet_CU(self,path_ID,packet):
         if(self.Receive(packet)):
             self.active_sketch.Receive_packet_CU(packet,self.scope[path_ID],self.wps[path_ID])

@@ -56,7 +56,7 @@ class _Paths:
                     self.switches.append(Sketch.Switch._Switch(index, self.d, 2**int(each[0])))
                     index += 1
 
-
+        # 这里可以调整switch上sketch大小范围等
         else:
             switch_ws = []
             for i in range(0,self.switch_count+1):
@@ -119,6 +119,7 @@ class _Paths:
     def Get_Path(self):
         return self.path_list.values()
     # 将scope和packet传递给对应pathID的path，调用_Path.Deliver_Packet(self,scope,packet):
+    # 三种逻辑下处理包
     def Deliver_Packet(self,pathID,packet):
         self.path_list[pathID].Deliver_Packet(packet)
     def Deliver_Packet_Common(self,pathID,packet):
@@ -206,15 +207,17 @@ class _Path:
             current = next
 
 
+    # 拼接sketch，暂时弃用
+    # def path_query(self):
+    #     skethes = [[],[]]
+    #     for switch in self.path:
+    #         temp_sketch = switch.Query()
+    #         skethes[0].extend(temp_sketch[0])
+    #         skethes[1].extend(temp_sketch[1])
+    #     # print(skethes)
+    #     return skethes
 
-    def path_query(self):
-        skethes = [[],[]]
-        for switch in self.path:
-            temp_sketch = switch.Query()
-            skethes[0].extend(temp_sketch[0])
-            skethes[1].extend(temp_sketch[1])
-        # print(skethes)
-        return skethes
+    # 查询这条path上的sketch，并返回
     def path_query_distrubute(self):
         skethes = []
         for switch in self.path:

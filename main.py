@@ -30,21 +30,35 @@ def Run():
 if __name__ == '__main__':
 
 
-    sketch = Function.MainProcess._MainProcess()
-
-    path = "Source\\Total\\Scope.csv"
-    with open(path, "w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(sketch.paths.Query_Scope())
-
-        file.close()
-
-
 
     Num = []
-    num = 10000
+    num = 5000
+    for i in range(0,31):
+        Num.append(num)
+        num +=2500
+    Types = ["CU"]
+    for each in Num:
+        for Type in Types:
+            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=5)
+            sketch.Run_Send(Type)
+            sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
+
+    #   # 查询写出Scope逻辑
+    # sketch = Function.MainProcess._MainProcess()
+    #
+    # path = "Source\\Total\\Scope.csv"
+    # with open(path, "w",newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(sketch.paths.Query_Scope())
+    #
+    #     file.close()
 
 
+
+    # Num = []
+    # num = 10000
+
+    #   # 查询写出分析逻辑
     # CU = [["ARE",],["WMRE",],["F1",],["RE",]]
     # Distribute = [["ARE",],["WMRE",],["F1",],["RE",]]
     # CORE = [["ARE",],["WMRE",],["F1",],["RE",]]
@@ -78,7 +92,9 @@ if __name__ == '__main__':
     #     file.close()
     #
     #
-    #
+
+
+    #   # 查询写出占用率逻辑
     #
     # Common_result = []
     # CU_result = []
