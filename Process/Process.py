@@ -50,15 +50,17 @@ class _Process:
     def write_ARE(self, outPath):
         with open(outPath, "w+") as fout:
             fout.write(str(get_ARE(self.map_flow_id_to_size)))
+        return "ARE:   "+str(get_ARE(self.map_flow_id_to_size))
 
     def write_WMRE(self, outPath):
         with open(outPath, "w+") as fout:
             fout.write(str(get_WMRE(self.map_flow_id_to_size)))
-
+        return "WMRE:   "+str(get_WMRE(self.map_flow_id_to_size))
     def write_F1Score(self, outPath, threshold: float):
         with open(outPath, "w+") as fout:
             fout.write(str(get_F1Score(self.map_flow_id_to_size, threshold)))
-
+        return "F1Score:   "+str(get_F1Score(self.map_flow_id_to_size, threshold))
     def write_entropy_RE(self, outPath):
         with open(outPath, "w+") as fout:
             fout.write(str(get_entropy_RE(self.map_flow_id_to_size)))
+        return "RE:   "+str(get_entropy_RE(self.map_flow_id_to_size))
