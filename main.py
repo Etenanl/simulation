@@ -39,7 +39,7 @@ if __name__ == '__main__':
     Types = ["CU"]
     for each in Num:
         for Type in Types:
-            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=5)
+            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=1)
             sketch.Run_Send(Type)
             sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
 
