@@ -31,27 +31,27 @@ if __name__ == '__main__':
 
 
 
-    Num = []
-    num = 5000
-    for i in range(0,31):
-        Num.append(num)
-        num +=2500
-    Types = ["CU"]
-    for each in Num:
-        for Type in Types:
-            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=1)
-            sketch.Run_Send(Type)
-            sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
+    # Num = []
+    # num = 5000
+    # for i in range(0,31):
+    #     Num.append(num)
+    #     num +=2500
+    # Types = ["CU"]
+    # for each in Num:
+    #     for Type in Types:
+    #         sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=1)
+    #         sketch.Run_Send(Type)
+    #         sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
 
-    #   # 查询写出Scope逻辑
-    # sketch = Function.MainProcess._MainProcess()
-    #
-    # path = "Source\\Total\\Scope.csv"
-    # with open(path, "w",newline='') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerows(sketch.paths.Query_Scope())
-    #
-    #     file.close()
+      # 查询写出Scope逻辑
+    sketch = Function.MainProcess._MainProcess()
+
+    path = "Source\\Total\\Scope.csv"
+    with open(path, "w",newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(sketch.paths.Query_Scope())
+
+        file.close()
 
 
 

@@ -132,17 +132,30 @@ class _Paths:
         Scope_List = []
         for path_key in self.path_list:
             path = self.path_list[path_key]
+            path_switch=[path_key]
             path_scope = [path_key]
+            for each in path.path:
+                path_switch.append("s"+str(each.switch_ID))
+                path_switch.append("α")
+                path_switch.append("β")
             for each in path.scope:
-                path_scope.append([round(each[0],4),round(each[1],4)])
+                path_scope.append("")
+                path_scope.append(round(each[0],4))
+                path_scope.append(round(each[1],4))
             # for switch in path.path_sketch:
             #     path_scope.append(switch.Scope[path_key])
+            Scope_List.append(path_switch)
             Scope_List.append(path_scope)
         def Take_PPS(elem):
             return elem[0]
 
         # 按照pps排序
         Scope_List.sort(key=Take_PPS, reverse=False)
+
+        i = 1
+        while i < len(Scope_List):
+            Scope_List[i][0]=""
+            i+=2
 
         return Scope_List
 
