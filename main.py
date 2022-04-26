@@ -9,26 +9,72 @@ import Function.MainProcess
 import Common.Packet
 import Utility.Hash
 import Sketch.Paths
-
+import time
+import threading
 
 def Run():
     Num = []
-    num = 5000
+    num = 20000
     for i in range(0,31):
         Num.append(num)
         num +=2500
-    Types = ["Distribute","Common","CU"]
+    Types = ["Distribute"]
     for each in Num:
         for Type in Types:
-            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=5)
+            print(each)
+            a = time.time()
+            sketch = Function.MainProcess._MainProcess(FlowCount=each, RuningTime=10)
             sketch.Run_Send(Type)
             sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
+            print(time.time()-a)
+        break
 
+
+def Select_path():
+    length = 10
+    round = 5
+    q = {}
+    for i in range(0,length+1):
+        q[i] = 0
+    while True:
+        x = random.randrange(0,length+1)
+        if q[x] == 0:
+            for key in q:
+                if not q[key] == 0:
+                    q[key] -= 1
+            q[x] = round
+            print("x="+str(x))
+            print(q)
+
+
+def run(x):
+
+    sketch = Function.MainProcess._MainProcess(FlowCount=3000, RuningTime=1,AdjustTime=300,mp=x)
+    sketch.Main_Process_Adjust()
 
 
 
 if __name__ == '__main__':
+    # Select_path()
+    # Run()
 
+    t1 = threading.Thread(target=run,args=(5,))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
+    t2 = threading.Thread(target=run,args=(10,))
+    t1.start()
+    t2.start()
+
+
+
+
+
+
+
+
+    # a = time.time()
+    # sketch = Function.MainProcess._MainProcess(FlowCount=2000, RuningTime=1)
+    # sketch.Main_Process_Adjust()
+    #
+    # print(time.time() - a)
 
 
     # Num = []
@@ -43,15 +89,15 @@ if __name__ == '__main__':
     #         sketch.Run_Send(Type)
     #         sketch.Run_Query(Type=Type, path="Source\\"+str(each)+"\\Result")
 
-      # 查询写出Scope逻辑
-    sketch = Function.MainProcess._MainProcess()
-
-    path = "Source\\Total\\Scope.csv"
-    with open(path, "w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(sketch.paths.Query_Scope())
-
-        file.close()
+    #   # 查询写出Scope逻辑
+    # sketch = Function.MainProcess._MainProcess()
+    #
+    # path = "Source\\Total\\Scope.csv"
+    # with open(path, "w",newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(sketch.paths.Query_Scope())
+    #
+    #     file.close()
 
 
 

@@ -1,7 +1,10 @@
 # sketch基类
 import Utility.Hash
+import Common.Flow
+import Common.FlowInfo
 class _Basic_Sketch:
-    def __init__(self,d,ws,active,hashFunction):
+    def __init__(self,d,ws,active,hashFunction,switch_ID):
+        self.switch_ID = switch_ID
         # 哈希表长宽
         self.hashfunc = hashFunction
         self.active = active
@@ -23,17 +26,18 @@ class _Basic_Sketch:
     def Receive_packet(self,packet,scope,wp):
 
         for i in range(0,self.d):
-            # hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),wp,hashfunc[i])
-            # if hash >= scope[0]+1 and hash <= scope[1]:
-            #     index = 1+(hash-scope[0]-1)*wp/(scope[1] - scope[0] -1)
-            #     print(str(i)+"   "+str(index)+"    "+str(wp)+"    "+str(self.w))
-            #     self.sketch_table[i][int(index)] += 1
             hash = self.hash.Hash_Function(str(packet.flow.flowInfo.flowID),wp,self.hashfunc[i])
             # 查看hash出来的值是否在这个sketch上
             # 改范围
+            index = 0
             if hash >= round(scope[0]*wp) and hash <= round(scope[1]*wp)-1:
-                index = (self.sketch_w-1)*(hash-round(scope[0]*wp)-1)/(round(scope[1]*wp) - round(scope[0]*wp) -1)
-                self.sketch_table[i][int(index)] += packet.packet_size
+                index = int((self.sketch_w-1)*(hash-round(scope[0]*wp)-1)/(round(scope[1]*wp) - round(scope[0]*wp) -1))
+                self.sketch_table[i][index] += packet.packet_size
+            # 每个流第一次发送时记录其switch与在上面的index
+                if packet.flow.flowInfo.is_first[i] == True:
+                    packet.flow.flowInfo.is_first[i] = False
+                    packet.flow.flowInfo.switch[i] = self.switch_ID
+                    packet.flow.flowInfo.index[i] = index
 
     # common模式下收包处理逻辑
     def Receive_packet_common(self,packet):
@@ -50,9 +54,6 @@ class _Basic_Sketch:
             if hash >= round(scope[0] * wp) and hash <= round(scope[1] * wp) - 1:
                 index = int((self.sketch_w - 1) * (hash - round(scope[0] * wp) - 1) / (
                             round(scope[1] * wp) - round(scope[0] * wp) - 1))
-                # 这里修改了算法逻辑，第二种情况将不会进行减小，
-                #
-                #
                 if self.sketch_table[i][index]+packet.packet_size<packet.flow_count_CU_min:
                     packet.flow_count_CU_min = self.sketch_table[i][index]+packet.packet_size
                     self.sketch_table[i][index] += packet.packet_size

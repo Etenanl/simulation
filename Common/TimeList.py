@@ -11,7 +11,6 @@ class _TimeList:
         for each in sortDataSet:
             if len(each[1]):
                 self.Generate_time_list(each[0],each[1])
-
     # 生成timelist
     def Generate_time_list(self,time,flows):
         time_array = Common.Time._Time(time,flows)
