@@ -174,7 +174,7 @@ class _Paths:
             else:
                 repeat_time = self.mutiplying_power
 
-            if(pathid == len(self.path_list) - 90):
+            if pathid == len(self.path_list):
                 pathid = 1
             else:
                 pathid += 1

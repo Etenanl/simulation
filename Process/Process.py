@@ -6,11 +6,13 @@ csv文件中，每一个flow对应两行，第一行为sketch模拟的值，第�
 结果输出在文件里
 
 """
+import csv
 import os
 from ARE import get_ARE
 from WMRE import get_WMRE
 from F1_Score import get_F1Score
 from RE import get_entropy_RE
+from JainFairness import get_JainFairness
 '''
 计算前使用initialize初始化数据结构
 之后可以直接调用write_xxx函数写入对应的文件中
@@ -18,6 +20,7 @@ from RE import get_entropy_RE
 class _Process:
     def __init__(self):
         self.map_flow_id_to_size = {} #key:flow_ID value:[estimated_value, real_value]
+        self.occupation = []
 
     def initialize(self,inputPath):
         files = os.listdir(inputPath)
@@ -25,6 +28,16 @@ class _Process:
             #以.csv结尾，其他特殊情况之后考虑
             if not file.endswith(".csv"):
                 continue
+            if file.startswith("_Occupation.csv"):
+                with open(inputPath + os.sep + file, "r") as fin:
+                    reader = csv.reader(fin)
+                    for each in reader:
+                        if each[0] == "0" :
+                            continue
+                        else:
+                            self.occupation.append(each[1])
+                continue
+
             with open(inputPath + os.sep + file, "r") as fin:
                 while True:
                     estimated_line = fin.readline().strip()
@@ -84,3 +97,7 @@ class _Process:
         with open(outPath, "w+") as fout:
             fout.write(str(round(get_entropy_RE(self.map_flow_id_to_size),5)))
         return str(round(get_entropy_RE(self.map_flow_id_to_size),5))
+    def write_get_JainFairness(self, outPath):
+        with open(outPath, "w+") as fout:
+            fout.write(str(round(get_JainFairness(self.occupation),5)))
+        return str(round(get_JainFairness(self.occupation),5))
