@@ -45,7 +45,7 @@ class _MainProcess:
         # 初始化路径
         self.paths = Sketch.Paths._Paths(self.path_path, self.flows.flows, self.d, self.w,self.mutiplying_power,self.round)
 
-        self.result_path = "Source\\Restult"
+        self.result_path = "Source\\Result"
 
 
     def Main_Process(self):
@@ -433,7 +433,7 @@ class _MainProcess:
                     # print("select_time_counter = "+str(select_time_counter))
             # 时间过去一个单位
             time_counter+=1
-            print("发包至第"+str(time_counter)+"秒，"+"共有"+str(self.running_time)+"秒，")
+            print("未调整发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
         self.Query_Path_Sketch_Adjust(time_counter)
 
 
@@ -449,6 +449,11 @@ class _MainProcess:
                     break
                 while time.time>timer:
                     timer  +=1
+                    if timer == select_time_counter and (not time_counter % 20 == 0):
+
+                        self.paths.Adjust_Mapting()
+                        select_time_counter += adjust_time
+                        # print("select_time_counter = "+str(select_time_counter))
                 # 处理转发
                 for each in time.flows:
 
@@ -465,14 +470,15 @@ class _MainProcess:
                     self.Update_FlowInfo(self.packet)
                     # self.packet.flow.flowInfo.real_send_num+=1
                 # 查看是否需要进行查询，如果需要则查
-                if timer == select_time_counter:
-                    self.paths.Adjust_Mapting()
-                    select_time_counter += adjust_time
-                    # print("select_time_counter = "+str(select_time_counter))
+                # 每20s挺一次调整，然后查询occupation
+
             # 时间过去一个单位
             time_counter+=1
             select_time_counter = adjust_time
-            print("发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
+            print("调整发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
 
             if time_counter % 1 == 0 and not time_counter == self.running_time:
                 self.Query_Path_Sketch_Adjust(time_counter)
+
+
+
