@@ -73,7 +73,8 @@ if __name__ == '__main__':
     #     analyze_dir = "..\\Source\\"+str(each)+"\\Analyze"
     #     process = _ProcessMain(result_dir,analyze_dir)
     result = []
-    for i in range(10,311):
+    i = 10
+    for i in range(10,150):
 
         result_dir = "..\\Source\\Result\\x=3\\time=" + str(i)
         analyze_dir = "..\\Source\\Result\\x=3\\time=" + str(i)
