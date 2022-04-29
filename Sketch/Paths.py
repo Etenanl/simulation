@@ -25,7 +25,8 @@ scope指[α，β]
 
 """
 class _Paths:
-    def __init__(self,path,flows,d,wp,mp,round):
+    def __init__(self,path,flows,d,wp,mp,round,gamma):
+        self.gamma = gamma
         # 确保每个switch唯一，不会在路径中重复出现,其中放_Path
         # path_list还是用map吧 path_id：path对象
         # 前round轮调整过的不进行调整
@@ -60,58 +61,14 @@ class _Paths:
 
 
     def Adjust_Mapting(self):
-        length = len(self.path_list)+1
-        while True:
-            path_id = random.randrange(1,length)
-            if self.adjust_map[path_id] == 0:
-                for key in self.adjust_map:
-                    if not self.adjust_map[key] == 0:
-                        self.adjust_map[key] -= 1
-                self.adjust_map[path_id] = self.round
 
-                # 记录每一个在这个path上的flow的已发包数
-                adjust_path = self.path_list[path_id]
-                switch = adjust_path.path
-                switch_ID = []
-                for each in switch:
-                    switch_ID.append(each.switch_ID)
-                for flow in self.flows:
-                    # 查看是否两个sketch都在这个path上
-
-
-                    flag = False
-                    second_flag = False
-                    for i in range(0,flow.flowInfo.d):
-                        if not flow.flowInfo.switch[i] == flow.flowInfo.switch[0]:
-                            flag = True
-                    if (not flag) and flow.flowInfo.switch[0] in switch_ID:
-                        second_flag = True
-
-                    # 如果不全在，相应的flow+=sketch
-                    if not second_flag:
-                        for i in range(0,flow.flowInfo.d):
-                            if flow.flowInfo.is_first[i] == True:
-                                continue
-                            if flow.flowInfo.switch[i] in switch_ID:
-                                flow.flowInfo.counted_sketch_count[i] += self.switches[flow.flowInfo.switch[i]].active_sketch.sketch_table[i][flow.flowInfo.index[i]]
-                    # 如果全在，取到所有的sketch取最小，加给flow
-                    else:
-                        min_count = 1000000
-                        for i in range(0,flow.flowInfo.d):
-                            if flow.flowInfo.is_first[i] == True:
-                                continue
-                            if flow.flowInfo.switch[i] in switch_ID:
-                                min_count = min(min_count,self.switches[flow.flowInfo.switch[i]].active_sketch.sketch_table[i][flow.flowInfo.index[i]])
-                        for i in range(0, flow.flowInfo.d):
-                            flow.flowInfo.counted_sketch_count[i] += min_count
-
-
-                    # 调整路径的scope
-                self.path_list[path_id].Adjust_Scope()
-
-                # print("pathid = "+str(path_id))
-                # print(self.adjust_map)
-                break
+        for path in self.path_list:
+            self.path_list[path].caculate()
+        for path in self.path_list:
+            self.path_list[path].Scope_Count_with_Occupation()
+    def Refresh(self):
+        for switch in self.switches:
+            switch.refresh_sketch()
 
     # 第一次初始化时生成每个switch的sketch大小，并保存在Source\\switch_ws.csv
     # 这个文件存在时则直接使用
@@ -145,7 +102,7 @@ class _Paths:
                 path_id = int(item[0])
                 switchids = item[1]
                 # reverse_path_id = path_id+104
-                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.logical_w,self.d)
+                self.path_list[path_id] = _Path(path_id,switchids,self.switches,self.logical_w,self.d,self.gamma)
                 #
                 # 删去了clone
                 # reverse_path = switchids.copy()
@@ -160,6 +117,7 @@ class _Paths:
         # 平均分配
         pathid = 1
         # 选中的path的ID
+<<<<<<< Updated upstream
         select_pathID = 9
         repeat_time = self.mutiplying_power
         for flow in self.flows:
@@ -181,11 +139,33 @@ class _Paths:
 
 
         # # 随机分配
+=======
+        # repeat_time = self.mutiplying_power
+>>>>>>> Stashed changes
         # for flow in self.flows:
-        #     pathid = random.randint(1,208)
         #     path = self.path_list[pathid]
+        #
         #     path.flow.append(flow)
         #     flow.flowInfo.pathID = pathid
+        #     # 对9号路径做多倍的处理
+        #     if pathid == 9 and not repeat_time == 0:
+        #         repeat_time -= 1
+        #         continue
+        #     else:
+        #         repeat_time = self.mutiplying_power
+        #
+        #     if pathid == len(self.path_list):
+        #         pathid = 1
+        #     else:
+        #         pathid += 1
+
+
+        # 随机分配
+        for flow in self.flows:
+            pathid = random.randint(1,len(self.path_list))
+            path = self.path_list[pathid]
+            path.flow.append(flow)
+            flow.flowInfo.pathID = pathid
 
 
 
@@ -243,7 +223,8 @@ class _Paths:
 
 
 class _Path:
-    def __init__(self,path_ID,switchids,switches,wp,d):
+    def __init__(self,path_ID,switchids,switches,wp,d,gamma):
+        self.gamma = gamma
         self.d = d
         # 哈希工具类
         self.hash = Utility.Hash._Hash()
@@ -323,13 +304,13 @@ class _Path:
         total = 0.0
         # wp = 0
         for sw in self.path:
-            total += 1.0*sw.ws/(sw.path_number * sw.Occupied_insketch())
+            total += 1.0*sw.ws/(sw.path_number * sw.Occupied_insketch()** self.gamma)
         #     wp += sw.ws
         # self.wp = wp
         current = 0.0
         next = 0.0
         for sw in self.path:
-            next = current + 1.0*sw.ws/(sw.path_number * sw.Occupied_insketch())
+            next = current + 1.0*sw.ws/(sw.path_number * sw.Occupied_insketch() ** self.gamma)
             sw.scope[self.path_ID] = [current*1.0/total,next*1.0/total]
             self.scope.append([current*1.0/total,next*1.0/total])
             current = next
@@ -366,10 +347,7 @@ class _Path:
                 if hash2 >= round(scope_i[0] * self.logical_w)  and hash2 <= round(scope_i[1] * self.logical_w)-1:
                     index2 = (switch_i.ws-1) * (hash2 - round(scope_i[0] * self.logical_w) - 1) / (round(scope_i[1] * self.logical_w) - round(scope_i[0] * self.logical_w) - 1)
                     hash_value2 = sketches[i][1][int(index2)]
-            temp_value1 = flow.flowInfo.counted_sketch_count[0] + hash_value1
-            temp_value2 = flow.flowInfo.counted_sketch_count[1] + hash_value2
-            flow.flowInfo.temp_count = min(temp_value1,temp_value2)
-            flow.flowInfo.packetnum_skech = min(hash_value1,hash_value2)
+            flow.flowInfo.packetnum_skech += min(hash_value1,hash_value2)
 
     # 计算common策略下这条路径上的每个flow的值
     def caculate_common(self):

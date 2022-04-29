@@ -11,9 +11,9 @@ import Process
 class _MainProcess:
 
     def __init__(self,mp = 10,DataSetPath = "Source\\test.csv",TopoPath = "Source\\path.json",FlowCount = 1000,LogicalW = 65536,
-                 GlobalD = 2,RuningTime = 2,selectTime = 10,round = 20,AdjustTime = 10):
+                 GlobalD = 2,RuningTime = 2,selectTime = 10,round = 20,AdjustTime = 10,gamma = 1):
 
-
+        self.gamma = gamma
         # 查询间隔,单位ms
         self.select_time = selectTime
         # 间隔轮数
@@ -43,7 +43,7 @@ class _MainProcess:
 
         self.path_path = TopoPath
         # 初始化路径
-        self.paths = Sketch.Paths._Paths(self.path_path, self.flows.flows, self.d, self.w,self.mutiplying_power,self.round)
+        self.paths = Sketch.Paths._Paths(self.path_path, self.flows.flows, self.d, self.w,self.mutiplying_power,self.round,self.gamma)
 
         self.result_path = "Source\\Result"
 
@@ -353,11 +353,6 @@ class _MainProcess:
     # 按path查询,path上有该路上flow信息，统计每个flow的发包情况作为真实值
     def Query_Path_Sketch_Adjust(self,time):
         # 取到_Path对象
-
-        for path_key in self.paths.path_list:
-            path = self.paths.path_list[path_key]
-            path.caculate()
-
         for path_key in self.paths.path_list:
             path = self.paths.path_list[path_key]
             pathid = path_key
@@ -368,7 +363,7 @@ class _MainProcess:
                 flowID = flow.flowInfo.flowID
                 # 获取sketch上的值
 
-                value = flow.flowInfo.temp_count
+                value = flow.flowInfo.packetnum_skech
                 flowID_realValue = [pathid,flowID,value]
                 result_list.append(flowID_realValue)
 
@@ -380,7 +375,7 @@ class _MainProcess:
                 result_list.append(flowID_realValue)
 
             # 写入文件
-            filename = self.result_path + "\\x=" + str(self.mutiplying_power) +"\\time=" + str(time)
+            filename = self.result_path + "\\floow=" + str(len(self.flows.flows))+ "\\gamma=" + str(self.gamma) +"\\time=" + str(time)
             if not os.path.exists(filename):
                 os.makedirs(filename)
             filename  += "\\path" + str(pathid) + ".csv"
@@ -394,11 +389,13 @@ class _MainProcess:
             Occupation.append([switch.switch_ID,switch.Occupied_insketch()])
 
 
-        filename = self.result_path + "\\x=" + str(self.mutiplying_power) +"\\time=" + str(time) +"\\_Occupation.csv"
+        filename = self.result_path + "\\floow=" + str(len(self.flows.flows))+ "\\gamma=" + str(self.gamma) +"\\time=" + str(time) +"\\_Occupation.csv"
         with open(filename, "w", newline='') as file:
             writer = csv.writer(file)
             writer.writerows(Occupation)
             file.close()
+
+        self.paths.Refresh()
 
 
 
@@ -406,6 +403,7 @@ class _MainProcess:
         # 用来计算模拟时间，表示秒
         time_counter = 0
 
+<<<<<<< Updated upstream
         while time_counter < self.running_time:
             # 用来模拟一个单位时间内的时间流动
             timer = 0
@@ -442,6 +440,9 @@ class _MainProcess:
         select_time_counter = adjust_time
 
         while time_counter < self.total_time:
+=======
+        while time_counter <= self.total_time:
+>>>>>>> Stashed changes
             # 用来模拟一个单位时间内的时间流动
             timer = 0
             for time in self.flows.time_list.time_list:
@@ -449,11 +450,15 @@ class _MainProcess:
                     break
                 while time.time>timer:
                     timer  +=1
+<<<<<<< Updated upstream
                     if timer == select_time_counter and (not time_counter % 20 == 0):
 
                         self.paths.Adjust_Mapting()
                         select_time_counter += adjust_time
                         # print("select_time_counter = "+str(select_time_counter))
+=======
+                    # 查看是否需要进行查询，如果需要则查
+>>>>>>> Stashed changes
                 # 处理转发
                 for each in time.flows:
 
@@ -473,7 +478,15 @@ class _MainProcess:
                 # 每20s挺一次调整，然后查询occupation
 
             # 时间过去一个单位
+            if time_counter % 10 == 9 and not time_counter == 0:
+                print("调整查询")
+                self.paths.Adjust_Mapting()
+                # print("select_time_counter = "+str(select_time_counter))
+                self.Query_Path_Sketch_Adjust(time_counter)
+
+            print("发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
             time_counter+=1
+<<<<<<< Updated upstream
             select_time_counter = adjust_time
             print("调整发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
 
@@ -481,4 +494,7 @@ class _MainProcess:
                 self.Query_Path_Sketch_Adjust(time_counter)
 
 
+=======
+
+>>>>>>> Stashed changes
 

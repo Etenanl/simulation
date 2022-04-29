@@ -47,9 +47,13 @@ def Select_path():
             print(q)
 
 
-def run(x):
+def run(gamma,flow):
 
+<<<<<<< Updated upstream
     sketch = Function.MainProcess._MainProcess(FlowCount=20000, RuningTime=10,AdjustTime=300,mp=x)
+=======
+    sketch = Function.MainProcess._MainProcess(FlowCount=flow, RuningTime=10,AdjustTime=100,gamma=gamma)
+>>>>>>> Stashed changes
     sketch.Main_Process_Adjust()
 
 
@@ -57,6 +61,7 @@ def run(x):
 if __name__ == '__main__':
     # Select_path()
     # Run()
+<<<<<<< Updated upstream
 
     t1 = threading.Thread(target=run, args=(3,))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
     t2 = threading.Thread(target=run, args=(6,))
@@ -64,6 +69,16 @@ if __name__ == '__main__':
     t1.start()
     t2.start()
     t3.start()
+=======
+    t1 = threading.Thread(target=run,args=(0.8,10000))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
+    t2 = threading.Thread(target=run,args=(1.2,10000))
+    t3 = threading.Thread(target=run,args=(0.8,20000))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
+    t4 = threading.Thread(target=run,args=(1.2,20000))
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+>>>>>>> Stashed changes
 
 
 
