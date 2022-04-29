@@ -403,46 +403,7 @@ class _MainProcess:
         # 用来计算模拟时间，表示秒
         time_counter = 0
 
-<<<<<<< Updated upstream
-        while time_counter < self.running_time:
-            # 用来模拟一个单位时间内的时间流动
-            timer = 0
-            for time in self.flows.time_list.time_list:
-                if timer > self.time_granularity:
-                    break
-                while time.time>timer:
-                    timer  +=1
-                # 处理转发
-                for each in time.flows:
-
-                    # 对于每个flow，做以下操作，
-                    # 1.找到对应pathID，以及flowID，
-                    # flowID = each.flowInfo.flowID
-                    pathID = each.flowInfo.pathID
-
-                    # 2.将flow封装成Packet
-                    self.packet.New_Packet(each)
-                    # 3.将Packet传递给paths.Deliver_Packet()
-                    self.paths.Deliver_Packet(pathID,self.packet)
-                    # 4.修改包信息，real_send_num++
-                    self.Update_FlowInfo(self.packet)
-                    # self.packet.flow.flowInfo.real_send_num+=1
-
-                    # print("select_time_counter = "+str(select_time_counter))
-            # 时间过去一个单位
-            time_counter+=1
-            print("未调整发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
-        self.Query_Path_Sketch_Adjust(time_counter)
-
-
-
-        adjust_time = int(self.time_granularity*self.select_time/1000)
-        select_time_counter = adjust_time
-
-        while time_counter < self.total_time:
-=======
         while time_counter <= self.total_time:
->>>>>>> Stashed changes
             # 用来模拟一个单位时间内的时间流动
             timer = 0
             for time in self.flows.time_list.time_list:
@@ -450,15 +411,7 @@ class _MainProcess:
                     break
                 while time.time>timer:
                     timer  +=1
-<<<<<<< Updated upstream
-                    if timer == select_time_counter and (not time_counter % 20 == 0):
-
-                        self.paths.Adjust_Mapting()
-                        select_time_counter += adjust_time
-                        # print("select_time_counter = "+str(select_time_counter))
-=======
                     # 查看是否需要进行查询，如果需要则查
->>>>>>> Stashed changes
                 # 处理转发
                 for each in time.flows:
 
@@ -474,9 +427,11 @@ class _MainProcess:
                     # 4.修改包信息，real_send_num++
                     self.Update_FlowInfo(self.packet)
                     # self.packet.flow.flowInfo.real_send_num+=1
-                # 查看是否需要进行查询，如果需要则查
-                # 每20s挺一次调整，然后查询occupation
 
+                # if timer == select_time_counter and  not (time_counter % 20 == 0):
+                #     self.paths.Adjust_Mapting()
+                #     select_time_counter += adjust_time
+                #     # print("select_time_counter = "+str(select_time_counter))
             # 时间过去一个单位
             if time_counter % 10 == 9 and not time_counter == 0:
                 print("调整查询")
@@ -486,15 +441,5 @@ class _MainProcess:
 
             print("发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
             time_counter+=1
-<<<<<<< Updated upstream
-            select_time_counter = adjust_time
-            print("调整发包至第"+str(time_counter)+"秒，"+"共有"+str(self.total_time)+"秒，")
 
-            if time_counter % 1 == 0 and not time_counter == self.running_time:
-                self.Query_Path_Sketch_Adjust(time_counter)
-
-
-=======
-
->>>>>>> Stashed changes
 

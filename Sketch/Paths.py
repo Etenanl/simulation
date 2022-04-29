@@ -117,31 +117,7 @@ class _Paths:
         # 平均分配
         pathid = 1
         # 选中的path的ID
-<<<<<<< Updated upstream
-        select_pathID = 9
-        repeat_time = self.mutiplying_power
-        for flow in self.flows:
-            path = self.path_list[pathid]
-
-            path.flow.append(flow)
-            flow.flowInfo.pathID = pathid
-            # 对9号路径做多倍的处理
-            if pathid == 9 and not repeat_time == 0:
-                repeat_time -= 1
-                continue
-            else:
-                repeat_time = self.mutiplying_power
-
-            if(pathid == len(self.path_list)):
-                pathid = 1
-            else:
-                pathid += 1
-
-
-        # # 随机分配
-=======
         # repeat_time = self.mutiplying_power
->>>>>>> Stashed changes
         # for flow in self.flows:
         #     path = self.path_list[pathid]
         #
