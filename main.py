@@ -49,7 +49,7 @@ def Select_path():
 
 def run(gamma,flow):
 
-    sketch = Function.MainProcess._MainProcess(FlowCount=flow, RuningTime=10,AdjustTime=100,gamma=gamma)
+    sketch = Function.MainProcess._MainProcess(FlowCount=flow, RuningTime=10,AdjustTime=110,gamma=gamma)
     sketch.Main_Process_Adjust()
 
 
@@ -57,14 +57,16 @@ def run(gamma,flow):
 if __name__ == '__main__':
     # Select_path()
     # Run()
-    t1 = threading.Thread(target=run,args=(0.8,10000))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
-    t2 = threading.Thread(target=run,args=(1.2,10000))
-    t3 = threading.Thread(target=run,args=(0.8,20000))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
-    t4 = threading.Thread(target=run,args=(1.2,20000))
+    t1 = threading.Thread(target=run,args=(0.8,30000))
+    t5 = threading.Thread(target=run,args=(1.2,30000))   # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
+    t2 = threading.Thread(target=run,args=(1,40000))
+    t3 = threading.Thread(target=run,args=(1,50000))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
+    t4 = threading.Thread(target=run,args=(1,60000))
     t1.start()
     t2.start()
     t3.start()
-    t4.start()
+    # t4.start()
+    t5.start()
 
 
 

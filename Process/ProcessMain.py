@@ -54,7 +54,7 @@ class _ProcessMain:
 
         p.initialize(input_ab_dir)
         whole_result[-1].append(p.write_ARE(output_ab_dir + os.sep + "ARE.txt"))
-
+        whole_result[-1].append(p.write_get_JainFairness(output_ab_dir + os.sep + "JF.txt"))
         with open(self.analyze_dir+"\\result.csv","w") as file:
             writer = csv.writer(file)
             writer.writerows(whole_result)
@@ -72,7 +72,29 @@ if __name__ == '__main__':
     #     result_dir = "..\\Source\\"+str(each)+"\\Result"
     #     analyze_dir = "..\\Source\\"+str(each)+"\\Analyze"
     #     process = _ProcessMain(result_dir,analyze_dir)
-    for i in range(0,100):
-        result_dir = "..\\Source\\Result" + str(i)
-        analyze_dir = "..\\Source\\Result" + str(i)
+    i1 = 9
+    result = []
+    for i in range(0,12):
+
+        result_dir = "..\\Source\\Result\\floow=10000\\gamma=0.8\\time=" + str(i1)
+        analyze_dir = "..\\Source\\Result\\floow=10000\\gamma=0.8\\time=" + str(i1)
         process = _ProcessMain(result_dir, analyze_dir)
+
+        with open(result_dir + "\\result.csv", "r") as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if len(row) <= 1:
+                    continue
+                result.append([])
+                result[-1].append(i)
+                result[-1].append("ARE")
+                result[-1].append(row[0])
+                result[-1].append("JF")
+                result[-1].append(row[1])
+        i1 += 10
+
+    with open("..\\Source\\Result\\floow=10000\\gamma=0.8\\result.csv", "w",newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(result)
+
+
